@@ -1,0 +1,59 @@
+ @import url('https://fonts.googleapis.com/css2?family=Ballet:opsz@16..72&family=Indie+Flower&family=Yanone+Kaffeesatz:wght@200;300;400;500;600;700&display=swap'); 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+add extra classes as following
+
+<tag-selector>{
+    @apply tailwind-class1 tailwind-class2 ....;
+*/
+
+/* 
+add extra components :
+
+@layer components {
+    <tag-selector>{
+        @apply tailwind-class1 tailwind-class2 ....;
+    }
+}
+*/
+
+.btn {
+  @apply border-blue-500 border-2 text-black font-bold text-xl py-2 px-4 rounded-lg hover:text-white hover:bg-[#695AC9];
+}
+
+.btn-dark {
+  @apply  text-white font-sans bg-violet-500 text-xl py-2 px-4 rounded-lg hover:bg-violet-300 hover:text-violet-500 hover:shadow-xl border-2 border-transparent;
+}
+
+.btn-light {
+  @apply text-violet-600 font-sans bg-violet-100 text-xl py-2 px-4 rounded-lg hover:bg-violet-300 hover:text-violet-500 hover:shadow-xl border-2 border-transparent;
+}
+
+.btn-sm {
+  @apply flex justify-center items-center cursor-pointer border-blue-500 border-2 text-black font-bold text-xl py-1 px-2 rounded-lg hover:text-white hover:bg-[#695AC9];
+}
+
+
+.error-message {
+  @apply text-red-500 font-bold max-w-[340px];
+}
+
+.separator {
+  @apply w-10/12 m-12;
+}
+
+.navBar {
+  @apply flex flex-col gap-3 mx-5 my-9 justify-between items-center lg:flex-row;
+}
+
+
+.footer-element a {
+  @apply flex flex-col-reverse gap-2 justify-between items-center;
+}
+
+.footer {
+  @apply flex flex-row gap-5 justify-around items-center;
+}

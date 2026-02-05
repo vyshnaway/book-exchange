@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+djangorestframework = "*"
+markdown = "*"
+django-filter = "*"
+django-versatileimagefield = "*"
+drf-flex-fields = "*"
+djangorestframework-simplejwt = "*"
+shell = "*"
+django-cors-headers = "*"
+django-polymorphic = "*"
+python-magic = "*"
+django-countries = "*"
+psycopg2 = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

@@ -1,0 +1,23 @@
+version: "3.9"
+   
+services:
+  web:
+    image: claudeperrin228/claudeperrin-djangotest:latest
+    build: .
+    command: python manage.py runserver 0.0.0.0:80
+    volumes:  
+      - ./boookz:/boookz
+      - ./authentication:/authentication
+      - ./boookzdata:/boookzdata
+      - ./media:/media
+      - ./transactions:/transactions
+      - ./Boookz-Nuxt:/Boookz-Nuxt
+    ports:
+      - "80:80"
+
+
+
+volumes:
+  book_exchanger:
+    external: true
+
