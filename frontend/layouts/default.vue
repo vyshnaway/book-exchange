@@ -1,9 +1,9 @@
 <template>
-  <div class="wrapper min-h-screen">
-    <div class="bg-violet-300 flex justify-center mb-8 max-h-min py-2 sticky top-0 z-50">
-      <NavigationBar class="max-w-[1200px] " />
+  <div class="wrapper min-h-screen bg-background font-sans text-secondary">
+    <div class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 flex justify-center py-2 transition-all">
+      <NavigationBar class="max-w-7xl w-full px-4" />
     </div>
-    <div class="content-wrapper max-w-[1200px] my-0 mx-auto">
+    <div class="content-wrapper max-w-7xl mx-auto px-4 py-8">
       <div class="content">
         <!-- this where the page components go -->
         <slot />
@@ -27,7 +27,7 @@ store.getWantedBooksFromDB();
 
 <style>
 html {
-  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-family: 'Poppins', 'Mulish', sans-serif;
   box-sizing: border-box;
 }
 

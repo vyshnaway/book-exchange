@@ -2,157 +2,154 @@
   <div
     class="flex flex-col md:flex-row md:mt-32 mx-auto justify-around items-center gap-1"
   >
-    <div class="img">
+    <div class="hidden md:block w-1/2">
       <img
         src="../assets/img/register-img.png"
-        alt="photo of a lady looking from her window"
+        alt="Start your journey"
+        class="w-full h-auto object-cover rounded-lg shadow-xl"
       />
     </div>
 
-    <div class="">
+    <div class="w-full md:w-1/3 bg-white p-8 rounded-lg shadow-2xl border border-gray-100 my-8">
       <form
         @submit.prevent="register"
         @input="store.resetErrors"
-        class="flex flex-col justify-between gap-3"
+        class="flex flex-col gap-4"
       >
-        <h1 class="text-3xl font-black">Register</h1>
+        <h1 class="text-4xl font-bold text-primary text-center mb-2">Join BoookZ</h1>
 
-        <div class="">
-          <label for="firstname"></label>
-          <input
-            required
-            class="input"
-            size="28"
-            type="name"
-            name="firstname"
-            id="firstname"
-            placeholder="first name"
-            v-model="form.first_name"
-          />
+        <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col">
+              <input
+                required
+                class="input w-full"
+                type="text"
+                name="firstname"
+                id="firstname"
+                placeholder="First Name"
+                v-model="form.first_name"
+              />
+            </div>
+
+            <div class="flex flex-col">
+              <input
+                required
+                class="input w-full"
+                type="text"
+                name="lastname"
+                id="lastname"
+                placeholder="Last Name"
+                v-model="form.last_name"
+              />
+            </div>
         </div>
 
-        <div class="">
-          <label for="lastname"></label>
+        <div>
           <input
             required
-            class="input"
-            size="28"
-            type="name"
-            name="lastname"
-            id="lastname"
-            placeholder="last name"
-            v-model="form.last_name"
-          />
-        </div>
-
-        <div class="">
-          <label for="country"></label>
-          <input
-            required
-            class="input"
-            size="28"
-            type="name"
-            name="lastname"
+            class="input w-full"
+            type="text"
+            name="country"
             id="country"
-            placeholder="country"
+            placeholder="Country"
             v-model="form.country"
           />
         </div>
 
-        <div class="">
-          <label for="username"></label>
+        <div>
           <input
             required
-            class="input"
-            size="28"
-            type="name"
+            class="input w-full"
+            type="text"
             name="username"
             id="username"
-            placeholder="username"
+            placeholder="Username"
             v-model="form.username"
           />
           <p
             v-if="store.registerError.username"
             v-for="error in store.registerError.username"
-            class="error-message"
+            class="text-xs text-red-500 mt-1"
           >
             {{ error }}
           </p>
         </div>
 
-        <div class="">
-          <label for="email"></label>
-          <input
+        <div>
+           <input
             required
-            class="input"
-            size="28"
+            class="input w-full"
             type="email"
             name="email"
             id="email"
-            placeholder="email address"
+            placeholder="Email Address"
             v-model="form.email"
           />
           <p
             v-if="store.registerError.email"
             v-for="error in store.registerError.email"
-            class="error-message"
+            class="text-xs text-red-500 mt-1"
           >
             {{ error }}
           </p>
         </div>
 
-        <div class="">
-          <label for="password"></label>
+        <div>
           <input
             required
-            class="input"
-            size="28"
+            class="input w-full"
             type="password"
-            placeholder="password"
+            placeholder="Password"
             v-model="form.password"
           />
-          <p>{{ form.password }}</p>
+          <!-- DEBUG TEXT REMOVED -->
           <p
             v-if="store.registerError.password"
             v-for="error in store.registerError.password"
-            class="error-message"
+            class="text-xs text-red-500 mt-1"
           >
             {{ error }}
           </p>
         </div>
 
-        <div class="">
-          <label for="password2"></label>
+        <div>
           <input
             required
-            class="input"
-            size="28"
+            class="input w-full"
             type="password"
-            placeholder="repeat password"
+            placeholder="Repeat Password"
             v-model="form.password2"
           />
-          <p
+           <p
             v-if="store.registerError.password2"
             v-for="error in store.registerError.password2"
-            class="error-message"
+            class="text-xs text-red-500 mt-1"
           >
             {{ error }}
           </p>
         </div>
 
-        <div class="">
-          <input
-            type="checkbox"
-            name="remember"
-            id="remember"
-            v-model="form.remember"
-          />
-          <label for="remember"> Remember me</label>
+        <div class="flex items-center gap-2 mt-2">
+            <input
+                type="checkbox"
+                name="remember"
+                id="remember"
+                v-model="form.remember"
+                class="w-4 h-4 text-accent rounded border-gray-300 focus:ring-accent"
+            />
+            <label for="remember" class="text-sm text-secondary cursor-pointer">Remember me</label>
         </div>
-        <div class="btn self-center">
-          <button type="submit">Register</button>
+
+        <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-lg shadow-md hover:shadow-lg transition-all mt-4">
+            Create Account
+        </button>
+        
+        <div class="text-center text-sm text-secondary mt-2">
+             <NuxtLink to="/signin" class="text-accent hover:text-orange-600 font-semibold hover:underline">
+               Already have an account? Sign in
+             </NuxtLink>
         </div>
-        <div></div>
+
       </form>
     </div>
   </div>
@@ -189,9 +186,7 @@
 </script>
 
 <style scoped>
-  .input {
-    border: 2px solid black;
-    border-radius: 7px;
-    padding: 10px;
-  }
+.input {
+  @apply bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-3 outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all;
+}
 </style>

@@ -9,15 +9,15 @@ module.exports = {
     './app.vue',
   ],
   theme: {
-    colors: {
-      'primary': '#00ff00',
-
-    },
     extend: {
       colors: {
+        primary: '#1e293b', // Deep Navy
+        secondary: '#475569', // Slate
+        accent: '#f59e0b', // Amber/Gold
+        background: '#f8fafc', // Off-white
+        surface: '#ffffff',
       },
     },
   },
   plugins: [],
-  important: true
 };

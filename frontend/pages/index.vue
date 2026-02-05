@@ -10,13 +10,13 @@
     <div class="flex flex-col justify-center items-center">
       <h2
         v-if="userStore.userIsLoggedIn"
-        class="flex justify-center text-4xl m-8 text-violet-600"
+        class="flex justify-center text-3xl font-bold m-8 text-primary"
       >
         Offered books by users in your area
       </h2>
       <h2
         v-else
-        class="flex justify-center text-4xl m-8 text-violet-600"
+        class="flex justify-center text-3xl font-bold m-8 text-primary"
       >
         Offered books
       </h2>
@@ -24,13 +24,13 @@
       <div class="flex flex-col gap-4">
         <div
           v-if="dataStore.giveAwayBooks.length > 0"
-          class="flex flex-row flex-wrap gap-3 justify-center pb-4"
+          class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center pb-4 px-4"
         >
           <BookCard
             v-for="book in loadedGiveawayBooks"
             :key="book.pk"
             :book="book"
-            class="w-1/3 md:w-1/4 my-6"
+            class="w-full my-6 transform hover:scale-105 transition duration-300"
           />
         </div>
 
@@ -61,26 +61,26 @@
     <div class="flex flex-col justify-center items-center">
       <h2
         v-if="userStore.userIsLoggedIn"
-        class="flex justify-center text-4xl m-8 text-violet-600"
+        class="flex justify-center text-3xl font-bold m-8 text-primary"
       >
         Wanted books by users in your area
       </h2>
       <h2
         v-else
-        class="flex justify-center text-4xl m-8 text-violet-600"
+        class="flex justify-center text-3xl font-bold m-8 text-primary"
       >
         Wanted books
       </h2>
       <div class="flex flex-col gap-2">
         <div
           v-if="dataStore.wantedBooks.length > 0"
-          class="flex flex-row flex-wrap gap-3 justify-center pb-6"
+          class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center pb-6 px-4"
         >
           <BookCard
             v-for="book in loadedWantedBooks"
             :key="book.pk"
             :book="book"
-            class="w-1/3 md:w-1/4 my-6"
+            class="w-full my-6 transform hover:scale-105 transition duration-300"
           />
         </div>
         <div
