@@ -5,7 +5,7 @@ COMPOSE_FILE = docker-compose.yml
 # Service Name in Docker Compose
 WEB_SERVICE = web
 # Frontend Directory
-FRONTEND_DIR = Boookz-Nuxt
+FRONTEND_DIR = frontend
 
 help: ## Show this help message
 	@echo 'Usage: make [target]'

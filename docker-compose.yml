@@ -18,10 +18,10 @@ services:
       retries: 5
 
   web:
-    build: .
+    build: ./backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - ./backend:/app
     ports:
       - "8000:8000"
     environment:
@@ -41,7 +41,7 @@ services:
 
   frontend:
     build: 
-      context: ./Boookz-Nuxt
+      context: ./frontend
     ports:
       - "3000:3000"
     environment:

@@ -1,7 +1,5 @@
 # Book Exchange web application
-🌐 [visit the deployed website](https://boookzexchange.store/) 
 
-🖥 (desktop viewport)
 check other viewports below
 
 ![welcome section](./assets/home_page.gif)
@@ -28,7 +26,7 @@ As a registered user, when adding a book, the application automatically suggests
 - the webApp integrates with Google Books API to automatically search for books in a specified langauge and fetch its info. (e.g: Authors of the book)
 ![adding book example](./assets/adding_book.gif)
 
-## 🐙 Responsiveness and compatibility:
+## Responsiveness and compatibility:
 The website is fully responsive for all viewports and compatibale with all major browsers, and have been tested on *Chrome*, *Firefox*, *Opera*, *Edge*.
 
 *📱in mobile viewport*
@@ -49,8 +47,10 @@ The website is fully responsive for all viewports and compatibale with all major
 - Django - postgrespool 2.0 (used to connect to the database in pooling mood)
 
 ## deplopyed website: 
+
 The backend engine is running on Apache server, and the front-end is running on a node.js server that is proxied by the apache server. 
-🌐 [visit the deployed website on OVHCloud](https://boookzexchange.store/) 
+
+[visit the deployed website on OVHCloud](https://boookzexchange.store/) 
 or [visit the deployed website on Netlify](https://boookzexchange.store/) 
 
 ****
@@ -65,6 +65,7 @@ git pull
 ### Python
 In terminal move to your cloned directory then:
 ```sh
+cd backend
 sudo pipenv install
 ```
 It will install all needed pip packeges (they are in Pipfile).
@@ -88,9 +89,9 @@ pip3 install pipenv
 
 ## 3- Front-End
 
-- **navigate to Boookz-Nuxt** 
+- **navigate to frontend** 
 ``` bash
-cd Boookz-Nuxt   
+cd frontend   
 ```
 
 - Make sure to install the dependencies:
