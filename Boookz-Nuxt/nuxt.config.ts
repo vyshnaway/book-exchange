@@ -36,7 +36,7 @@ export default defineNuxtConfig({
     '~/assets/css/tailwind.css',
     'vuetify/styles',
     'vuetify/dist/vuetify.min.css',
-    
+
     '@mdi/font/css/materialdesignicons.min.css',
   ],
   postcss: {
@@ -85,7 +85,11 @@ export default defineNuxtConfig({
     configPath: '~/config/tailwind.js',
 
   },
-
-
+  runtimeConfig: {
+    apiBase: process.env.API_BASE_URL || 'http://web:8000/',
+    public: {
+      apiBase: process.env.API_BASE_URL_PUBLIC || 'http://localhost:8000/'
+    }
+  },
 
 });

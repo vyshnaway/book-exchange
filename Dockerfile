@@ -1,12 +1,11 @@
-FROM python:3.9-slim
-WORKDIR .
+FROM python:3.10-slim
+WORKDIR /app
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update && apt-get upgrade -y && apt-get autoremove && apt-get autoclean
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     python3-pip \
     libffi-dev \
     libssl-dev \
@@ -18,14 +17,20 @@ RUN apt-get install -y \
     zlib1g-dev \
     net-tools \
     vim \
-    libmagic-dev
+    libmagic-dev \
+    libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
+COPY Pipfile Pipfile.lock ./
 
+# install dependencies
+RUN pip install --upgrade pip && \
+    pip install pipenv && \
+    pipenv install --system --skip-lock
 
 COPY . .
 
-#install dependencies
-RUN python -m pip install --upgrade pip && pip install pipenv && pipenv install --system --deploy --ignore-pipfile && pip install importlib-metadata && pip install django-environ && pip install environ
 RUN chmod +x docker-entrypoint.sh
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

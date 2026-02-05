@@ -17,6 +17,8 @@ django-polymorphic = "*"
 python-magic = "*"
 django-countries = "*"
 psycopg2 = "*"
+django-environ = "*"
+importlib-metadata = "*"
 
 [dev-packages]
 

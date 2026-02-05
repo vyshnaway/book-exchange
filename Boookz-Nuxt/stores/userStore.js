@@ -21,12 +21,11 @@ export const useUserStore = defineStore({
         chosenBookForATrade: {},
         registerSuccess: false,
         addBookSuccessfull: false,
-        BE_API: "https://boookzexchange.store:4433/"
     }),
     actions: {
         async signIn(form) {
             try {
-                const res = await $fetch(this.BE_API+'authentication/login/', {
+                const res = await $fetch(this.BE_API + 'authentication/login/', {
                     method: 'POST',
                     body: form
                 })
@@ -45,7 +44,7 @@ export const useUserStore = defineStore({
 
         async register(form) {
             try {
-                const res = await $fetch(this.BE_API+'authentication/register/', {
+                const res = await $fetch(this.BE_API + 'authentication/register/', {
                     method: 'POST',
                     body: form
                 })
@@ -58,7 +57,7 @@ export const useUserStore = defineStore({
         },
 
         async logOut() {
-            await $fetch(this.BE_API+'authentication/logout_all/', {
+            await $fetch(this.BE_API + 'authentication/logout_all/', {
                 method: 'POST',
                 headers: { "authorization": "Bearer " + this.token }
             })
@@ -79,7 +78,7 @@ export const useUserStore = defineStore({
 
         async getUserInfo() {
             try {
-                const res = await $fetch(this.BE_API+'authentication/profile/', {
+                const res = await $fetch(this.BE_API + 'authentication/profile/', {
                     headers: {
                         "authorization": "Bearer " + this.token,
                     }
@@ -108,7 +107,7 @@ export const useUserStore = defineStore({
 
         async addBook(form, shelf) {
             try {
-                const res = await $fetch(this.BE_API+'data/upload/' + shelf, {
+                const res = await $fetch(this.BE_API + 'data/upload/' + shelf, {
                     method: 'POST',
                     headers: {
                         "authorization": "Bearer " + this.token,
@@ -127,7 +126,7 @@ export const useUserStore = defineStore({
         },
 
         async deleteBook(book) {
-            const res = await $fetch(this.BE_API+'data/delete/' + book.pk, {
+            const res = await $fetch(this.BE_API + 'data/delete/' + book.pk, {
                 method: 'DELETE',
                 headers: {
                     "authorization": "Bearer " + this.token,
@@ -137,7 +136,7 @@ export const useUserStore = defineStore({
         },
 
         async startTransaction(initiator_book, receiver_book) {
-            const res = await $fetch(this.BE_API+'transaction/startTransaction/', {
+            const res = await $fetch(this.BE_API + 'transaction/startTransaction/', {
                 method: 'POST',
                 headers: {
                     "authorization": "Bearer " + this.token,
@@ -151,7 +150,7 @@ export const useUserStore = defineStore({
         },
 
         async deleteNotification(pk) {
-            const res = await $fetch(this.BE_API+'authentication/notification_delete/' + pk, {
+            const res = await $fetch(this.BE_API + 'authentication/notification_delete/' + pk, {
                 method: 'DELETE',
                 headers: {
                     "authorization": "Bearer " + this.token,
@@ -161,7 +160,7 @@ export const useUserStore = defineStore({
         },
 
         async acceptTransaction(pk) {
-            const res = await $fetch(this.BE_API+'transaction/confirm/' + pk, {
+            const res = await $fetch(this.BE_API + 'transaction/confirm/' + pk, {
                 method: 'PUT',
                 headers: {
                     "authorization": "Bearer " + this.token,
@@ -171,7 +170,7 @@ export const useUserStore = defineStore({
         },
 
         async declineTransaction(pk) {
-            const res = await $fetch(this.BE_API+'transaction/decline/' + pk, {
+            const res = await $fetch(this.BE_API + 'transaction/decline/' + pk, {
                 method: 'PUT',
                 headers: {
                     "authorization": "Bearer " + this.token,
@@ -181,7 +180,7 @@ export const useUserStore = defineStore({
         },
 
         async confirmBookRecieved(pk) {
-            const res = await $fetch(this.BE_API+'transaction/confirmReceive/' + pk, {
+            const res = await $fetch(this.BE_API + 'transaction/confirmReceive/' + pk, {
                 method: 'PUT',
                 headers: {
                     "authorization": "Bearer " + this.token,
@@ -191,7 +190,7 @@ export const useUserStore = defineStore({
         },
 
         async rateTransaction(pk, form) {
-            const res = await $fetch(this.BE_API+'transaction/rate/' + pk, {
+            const res = await $fetch(this.BE_API + 'transaction/rate/' + pk, {
                 method: 'POST',
                 headers: {
                     "authorization": "Bearer " + this.token,
@@ -202,7 +201,7 @@ export const useUserStore = defineStore({
         },
 
         async sendToSupport(message) {
-            await $fetch(this.BE_API+'data/report/', {
+            await $fetch(this.BE_API + 'data/report/', {
                 method: 'POST',
                 headers: { "authorization": "Bearer " + this.token, },
                 body: { "message": message }
@@ -211,7 +210,7 @@ export const useUserStore = defineStore({
         },
 
         async clearNotifications() {
-            await $fetch(this.BE_API +'authentication/notification_delete_all/', {
+            await $fetch(this.BE_API + 'authentication/notification_delete_all/', {
                 method: 'DELETE',
                 headers: { "authorization": "Bearer " + this.token, },
             })
@@ -223,6 +222,9 @@ export const useUserStore = defineStore({
 
     //to get specific parts of data, like select <items> from <container> WHERE <condition>
     getters: {
+        BE_API() {
+            return (useRuntimeConfig().apiBase || useRuntimeConfig().public.apiBase).replace(/\/$/, '') + '/';
+        }
     },
     persist: {
         storage: persistedState.sessionStorage,

@@ -29,6 +29,7 @@ class ExternalUserInterfer(APIException):
 
 class TransactionsView(ListAPIView):
     serializer_class = TransactionSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         book_reader = BookReader.objects.get(user=self.request.user)

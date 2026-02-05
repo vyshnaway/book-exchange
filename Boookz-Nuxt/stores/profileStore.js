@@ -9,7 +9,6 @@ export const useProfileStore = defineStore({
         region: '',
         userTransactions: [],
         userRatings: [],
-        BE_API: "https://boookzexchange.store:4433/"
     }),
     actions: {
         async getUserInfo() {
@@ -38,6 +37,9 @@ export const useProfileStore = defineStore({
     },
     //to get specific parts of data, like select <items> from <container> WHERE <condition>
     getters: {
+        BE_API() {
+            return (useRuntimeConfig().apiBase || useRuntimeConfig().public.apiBase).replace(/\/$/, '') + '/';
+        }
     },
     persist: {
         // storage: persistedState.sessionStorage,
