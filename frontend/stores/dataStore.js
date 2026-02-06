@@ -13,32 +13,48 @@ export const useDataStore = defineStore({
     searchResults: [],
   }),
   actions: {
-    async getWantedBooksFromDB() {
+    async getWantedBooksFromDB(countryCode = null, showOwnBooks = true) {
       const res = await $fetch(this.BE_API + 'data/wanted/');
       const userStore = useUserStore();
-      if (userStore.userIsLoggedIn) {
-        const booksInArea = res.filter(item => {
-          return (item.book_owner.country === userStore.region && item.book_owner.username !== userStore.userName)
+
+      const targetCountry = countryCode;
+      let filteredRes = res;
+
+      if (targetCountry) {
+        filteredRes = filteredRes.filter(item => {
+          return (item.book_owner.country === targetCountry)
         })
-        this.wantedBooks = booksInArea;
       }
-      else {
-        this.wantedBooks = res;
+
+      if (userStore.userIsLoggedIn && !showOwnBooks) {
+        filteredRes = filteredRes.filter(item => {
+          return (item.book_owner.username !== userStore.userName)
+        })
       }
+
+      this.wantedBooks = filteredRes;
     },
 
-    async getOfferedBooksFromDB() {
+    async getOfferedBooksFromDB(countryCode = null, showOwnBooks = true) {
       const res = await $fetch(this.BE_API + 'data/giveaway/');
       const userStore = useUserStore();
-      if (userStore.userIsLoggedIn) {
-        const booksInArea = res.filter(item => {
-          return (item.book_owner.country === userStore.region && item.book_owner.username !== userStore.userName)
+
+      const targetCountry = countryCode;
+      let filteredRes = res;
+
+      if (targetCountry) {
+        filteredRes = filteredRes.filter(item => {
+          return (item.book_owner.country === targetCountry)
         })
-        this.giveAwayBooks = booksInArea;
       }
-      else {
-        this.giveAwayBooks = res;
+
+      if (userStore.userIsLoggedIn && !showOwnBooks) {
+        filteredRes = filteredRes.filter(item => {
+          return (item.book_owner.username !== userStore.userName)
+        })
       }
+
+      this.giveAwayBooks = filteredRes;
       this.randomBook = this.giveAwayBooks[Math.floor(Math.random(1) * this.giveAwayBooks.length)];
     },
     setClickedBook(book) {

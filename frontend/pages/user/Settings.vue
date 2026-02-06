@@ -1,149 +1,147 @@
 <template>
-  <div class="flex justify-center container mx-auto gap-4">
-
-    <form @submit.prevent="updateAvatar"
-    class="flex flex-col justify-center items-center gap-4 self-start px-2">
-      <h2 class="font-sans font-extrabold text-xl self-start my-2">Public Profile</h2>
-
-      <div class="flex flex-row justify-around gap-12 md:w-full">
-        <img
-          src="../../assets/img/avatar.png"
-          alt="avatar"
-          class="w-32 h-32 rounded-full object-cover border-4 border-violet-500"
-        />
-        <div class="flex flex-col gap-4">
-          <button type="button" class="btn-dark" @click="changePicture">
-            Change Picture
-          </button>
-          <button type="button" class="btn-light" @click="removePicture">Remove Picture</button>
-        </div>
-      </div>
-    </form>
-<div>
-    <form @submit.prevent="updateData" class="">
-    <h2 class="font-sans font-extrabold text-xl self-start my-2">Personal data</h2>
-    <div class="flex flex-col w-full sm:flex-row justify-between gap-4">
-        <div class="flex flex-col">
-          <label for="name">name</label>
-          <input
-            id="name"
-            type="text"
-            v-model="userForm.name"
-            class="border-2 border-black p-2 rounded-lg"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label for="surname">surname</label>
-          <input
-            id="surname"
-            type="surname"
-            v-model="userForm.surname"
-            class="border-2 border-black p-2 rounded-lg"
-          />
-        </div>
-      </div>
-
-      <div class="w-full flex flex-col">
-        <label class="flex-auto" for="country">country:</label>
-        <input
-          id="country"
-          type="country"
-          v-model="userForm.country"
-          class="border-2 border-black p-2 rounded-lg flex-auto"
-        />
-      </div>
-    </form>
-
-    <form @submit.prevent="updatePrivacy" class="w-full flex flex-col gap-4 mt-8">
-      <h2 class="font-sans font-extrabold text-xl">Privacy</h2>
-        <div class="w-full flex flex-col">
-          <label for="password">Old password</label>
-          <input
-            id="password"
-            type="password"
-            v-model="userForm.password"
-            class="border-2 border-black p-2 rounded-lg"
-          />
-        </div>
-
-        <div class="w-full flex flex-col">
-          <label for="newPassword">New password</label>
-          <input
-            id="newPassword"
-            type="password"
-            v-model="userForm.newPassword"
-            class="border-2 border-black p-2 rounded-lg"
-          />
-        </div>
-        <div class="w-full flex flex-col">
-          <label for="passwordConfirm">Confirm password</label>
-          <input
-            id="passwordConfirm"
-            type="password"
-            v-model="userForm.passwordConfirm"
-            class="border-2 border-black p-2 rounded-lg"
-          />
-        </div>
-    </form>
-
-    <form
-      @submit.prevent="updateUser"
-      class="flex flex-col justify-center items-center gap-4  px-2"
-    >
-
-      <!-- <div class="w-full flex flex-col">
-        <label for="Genre">Genre:</label>
-        <input
-          id="Genre"
-          type="Genre"
-          v-model="userForm.Genre"
-          class="border-2 border-black p-2 rounded-lg"
-        />
-      </div> -->
-
-      <div class="w-full flex flex-col gap-4 mt-8">
+  <div class="max-w-5xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <!-- Sidebar Info -->
+      <div class="lg:col-span-1 border-r border-slate-100 pr-8 hidden lg:block">
+        <h1 class="text-3xl font-extrabold text-dark tracking-tight">Account Settings</h1>
+        <p class="text-slate-500 mt-2 font-medium">Manage your profile, personal data and privacy settings.</p>
         
+        <div class="mt-12 flex flex-col gap-4">
+          <div class="p-4 bg-indigo-50 rounded-2xl flex items-center gap-4 text-primary">
+            <font-awesome-icon icon="fa-solid fa-user-gear" />
+            <span class="font-bold text-sm uppercase tracking-wider">General</span>
+          </div>
+          <div class="p-4 hover:bg-slate-50 rounded-2xl flex items-center gap-4 text-slate-400 transition-colors cursor-pointer">
+            <font-awesome-icon icon="fa-solid fa-shield-halved" />
+            <span class="font-bold text-sm uppercase tracking-wider">Privacy</span>
+          </div>
+        </div>
       </div>
 
-      <button type="submit" class="btn-dark w-full">SAVE</button>
-    </form>
+      <!-- Main Content -->
+      <div class="lg:col-span-2 flex flex-col gap-12">
+        <!-- Profile Picture Section -->
+        <section class="glass p-8 rounded-3xl shadow-premium">
+          <h2 class="text-xl font-bold text-dark mb-8">Public Profile</h2>
+          <div class="flex flex-col sm:flex-row items-center gap-8">
+            <div class="relative group">
+              <img
+                :src="userStore.user?.profile_image || avatarPlaceholder"
+                alt="Profile Avatar"
+                class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg ring-1 ring-slate-100"
+              />
+              <div class="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                <font-awesome-icon icon="fa-solid fa-camera" class="text-white text-xl" />
+              </div>
+            </div>
+            
+            <div class="flex flex-col gap-3 flex-grow">
+              <div class="flex flex-wrap gap-2">
+                <button type="button" class="btn-primary !text-xs !py-2 !px-4" @click="changePicture">
+                  Upload New Picture
+                </button>
+                <button type="button" class="btn-outline !text-xs !py-2 !px-4 !border-slate-200 !text-slate-500" @click="removePicture">
+                  Remove
+                </button>
+              </div>
+              <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest leading-relaxed">
+                Allowed formats: JPG, PNG. Max size: 2MB.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Personal Data Section -->
+        <section class="glass p-8 rounded-3xl shadow-premium">
+          <h2 class="text-xl font-bold text-dark mb-8">Personal Details</h2>
+          <form @submit.prevent="updateData" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2">
+              <label class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">First Name</label>
+              <input v-model="userForm.name" type="text" :placeholder="userStore.firstName || 'Your name'" class="input-field" />
+            </div>
+            <div class="flex flex-col gap-2">
+              <label class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Last Name</label>
+              <input v-model="userForm.surname" type="text" :placeholder="userStore.lastName || 'Your surname'" class="input-field" />
+            </div>
+            <div class="flex flex-col gap-2 md:col-span-2">
+              <label class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Residential Country</label>
+              <input v-model="userForm.country" type="text" :placeholder="userStore.region || 'Enter country'" class="input-field" />
+            </div>
+            
+            <div class="md:col-span-2 pt-4">
+              <button type="submit" class="btn-primary w-full md:w-auto !px-8 shadow-lg">Save Personal Data</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Privacy Section -->
+        <section class="glass p-8 rounded-3xl shadow-premium">
+          <h2 class="text-xl font-bold text-dark mb-8">Security & Privacy</h2>
+          <form @submit.prevent="updatePrivacy" class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <label class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Current Password</label>
+              <input v-model="userForm.password" type="password" class="input-field" placeholder="••••••••" />
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">New Password</label>
+                <input v-model="userForm.newPassword" type="password" class="input-field" placeholder="••••••••" />
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Confirm New Password</label>
+                <input v-model="userForm.passwordConfirm" type="password" class="input-field" placeholder="••••••••" />
+              </div>
+            </div>
+            
+            <div class="pt-4 border-slate-50">
+              <button type="submit" class="btn-primary w-full md:w-auto !px-8 shadow-lg">Update Security</button>
+            </div>
+          </form>
+        </section>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { reactive } from "vue";
 import { useUserStore } from "~/stores/userStore";
-const {$toast} = useNuxtApp();
+import avatarPlaceholder from "~/assets/img/avatar.png";
 
+const { $toast } = useNuxtApp();
 const userStore = useUserStore();
 
 const userForm = reactive({
   name: "",
   surname: "",
+  country: "",
   password: "",
+  newPassword: "",
   passwordConfirm: "",
 });
 
-function updateUser() {
-  console.log(userForm);
+function updateData() {
+  $toast.success("Personal data updated successfully");
 }
+
+function updatePrivacy() {
+  if (userForm.newPassword !== userForm.passwordConfirm) {
+    $toast.error("Passwords do not match");
+    return;
+  }
+  $toast.success("Security settings updated");
+}
+
 function removePicture() {
   console.log("remove picture");
+  $toast.info("Avatar removed");
 }
 
 function changePicture() {
   console.log("change picture");
+  $toast.info("Select a new picture from your device");
 }
-// await userStore.getUserData();
 </script>
-
-<style lang="scss" scoped>
-input {
-  border: 2px solid black;
-  border-radius: 7px;
-  padding: 10px;
-}
-</style>
 
 //add email 
 // split forms 

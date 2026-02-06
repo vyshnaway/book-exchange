@@ -1,163 +1,174 @@
 <template>
-  <div
-    class="flex flex-col md:flex-row md:mt-32 mx-auto justify-around items-center gap-1"
-  >
-    <div class="hidden md:block w-1/2">
-      <img
-        src="../assets/img/register-img.png"
-        alt="Start your journey"
-        class="w-full h-auto object-cover rounded-lg shadow-xl"
-      />
-    </div>
+  <div class="min-h-[90vh] flex items-center justify-center p-4">
+    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[40px] shadow-premium overflow-hidden border border-slate-100">
+      
+      <!-- Left: Illustration & Value Prop -->
+      <div class="hidden lg:flex flex-col justify-center items-center bg-indigo-50/50 p-16">
+        <div class="mb-12 text-center">
+          <h2 class="text-4xl font-extrabold text-dark tracking-tight">Start Your Journey</h2>
+          <p class="text-slate-500 mt-3 font-medium text-lg">Exchanging stories has never been more elegant.</p>
+        </div>
+        <img
+          src="../assets/img/register-img.png"
+          alt="Start your journey"
+          class="w-full max-w-md drop-shadow-2xl animate-in slide-in-from-left duration-700"
+        />
+        <div class="mt-12 grid grid-cols-2 gap-6 w-full">
+          <div class="flex items-center gap-3 text-slate-600 font-bold text-sm">
+            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <font-awesome-icon icon="fa-solid fa-check" />
+            </div>
+            Free Forever
+          </div>
+          <div class="flex items-center gap-3 text-slate-600 font-bold text-sm">
+            <div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+              <font-awesome-icon icon="fa-solid fa-users" />
+            </div>
+            Active Community
+          </div>
+        </div>
+      </div>
 
-    <div class="w-full md:w-1/3 bg-white p-8 rounded-lg shadow-2xl border border-gray-100 my-8">
-      <form
-        @submit.prevent="register"
-        @input="store.resetErrors"
-        class="flex flex-col gap-4"
-      >
-        <h1 class="text-4xl font-bold text-primary text-center mb-2">Join BoookZ</h1>
+      <!-- Right: Form -->
+      <div class="p-8 lg:p-16 flex flex-col justify-center gap-10">
+        <div class="text-center lg:text-left">
+          <h1 class="text-4xl font-extrabold text-dark tracking-tight">Join Boookz</h1>
+          <p class="text-slate-500 mt-3 font-medium">Create your account and start discovering treasures.</p>
+        </div>
 
-        <div class="grid grid-cols-2 gap-2">
-            <div class="flex flex-col">
+        <form @submit.prevent="register" @input="store.resetErrors" class="flex flex-col gap-5">
+          <!-- Name Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="flex flex-col gap-2">
+              <label for="firstname" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">First Name</label>
               <input
-                required
-                class="input w-full"
-                type="text"
-                name="firstname"
                 id="firstname"
-                placeholder="First Name"
                 v-model="form.first_name"
-              />
-            </div>
-
-            <div class="flex flex-col">
-              <input
                 required
-                class="input w-full"
                 type="text"
-                name="lastname"
-                id="lastname"
-                placeholder="Last Name"
-                v-model="form.last_name"
+                placeholder="Jane"
+                class="input-field"
               />
             </div>
-        </div>
+            <div class="flex flex-col gap-2">
+              <label for="lastname" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Last Name</label>
+              <input
+                id="lastname"
+                v-model="form.last_name"
+                required
+                type="text"
+                placeholder="Doe"
+                class="input-field"
+              />
+            </div>
+          </div>
 
-        <div>
-          <input
-            required
-            class="input w-full"
-            type="text"
-            name="country"
-            id="country"
-            placeholder="Country"
-            v-model="form.country"
-          />
-        </div>
-
-        <div>
-          <input
-            required
-            class="input w-full"
-            type="text"
-            name="username"
-            id="username"
-            placeholder="Username"
-            v-model="form.username"
-          />
-          <p
-            v-if="store.registerError.username"
-            v-for="error in store.registerError.username"
-            class="text-xs text-red-500 mt-1"
-          >
-            {{ error }}
-          </p>
-        </div>
-
-        <div>
-           <input
-            required
-            class="input w-full"
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Email Address"
-            v-model="form.email"
-          />
-          <p
-            v-if="store.registerError.email"
-            v-for="error in store.registerError.email"
-            class="text-xs text-red-500 mt-1"
-          >
-            {{ error }}
-          </p>
-        </div>
-
-        <div>
-          <input
-            required
-            class="input w-full"
-            type="password"
-            placeholder="Password"
-            v-model="form.password"
-          />
-          <!-- DEBUG TEXT REMOVED -->
-          <p
-            v-if="store.registerError.password"
-            v-for="error in store.registerError.password"
-            class="text-xs text-red-500 mt-1"
-          >
-            {{ error }}
-          </p>
-        </div>
-
-        <div>
-          <input
-            required
-            class="input w-full"
-            type="password"
-            placeholder="Repeat Password"
-            v-model="form.password2"
-          />
-           <p
-            v-if="store.registerError.password2"
-            v-for="error in store.registerError.password2"
-            class="text-xs text-red-500 mt-1"
-          >
-            {{ error }}
-          </p>
-        </div>
-
-        <div class="flex items-center gap-2 mt-2">
+          <!-- Country Selection -->
+          <div class="flex flex-col gap-2">
+            <label for="country" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Country Code</label>
             <input
-                type="checkbox"
-                name="remember"
-                id="remember"
-                v-model="form.remember"
-                class="w-4 h-4 text-accent rounded border-gray-300 focus:ring-accent"
+              id="country"
+              v-model="form.country"
+              required
+              type="text"
+              placeholder="Ex: US, PL, GB"
+              maxlength="2"
+              class="input-field uppercase"
             />
-            <label for="remember" class="text-sm text-secondary cursor-pointer">Remember me</label>
-        </div>
+          </div>
 
-        <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-lg shadow-md hover:shadow-lg transition-all mt-4">
-            Create Account
-        </button>
-        
-        <div class="text-center text-sm text-secondary mt-2">
-             <NuxtLink to="/signin" class="text-accent hover:text-orange-600 font-semibold hover:underline">
-               Already have an account? Sign in
-             </NuxtLink>
-        </div>
+          <!-- Username & Email -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+             <div class="flex flex-col gap-2">
+              <label for="username" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Username</label>
+              <input
+                id="username"
+                v-model="form.username"
+                required
+                type="text"
+                placeholder="janedoe"
+                class="input-field"
+              />
+              <p v-if="store.registerError.username" class="text-[10px] text-red-500 font-bold uppercase ml-1">
+                {{ store.registerError.username[0] }}
+              </p>
+            </div>
+            <div class="flex flex-col gap-2">
+              <label for="email" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Email</label>
+              <input
+                id="email"
+                v-model="form.email"
+                required
+                type="email"
+                placeholder="jane@example.com"
+                class="input-field"
+              />
+              <p v-if="store.registerError.email" class="text-[10px] text-red-500 font-bold uppercase ml-1">
+                {{ store.registerError.email[0] }}
+              </p>
+            </div>
+          </div>
 
-      </form>
+          <!-- Passwords -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div class="flex flex-col gap-2">
+              <label for="password" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Password</label>
+              <input
+                id="password"
+                v-model="form.password"
+                required
+                type="password"
+                placeholder="••••••••"
+                class="input-field"
+              />
+               <p v-if="store.registerError.password" class="text-[10px] text-red-500 font-bold uppercase ml-1">
+                {{ store.registerError.password[0] }}
+              </p>
+            </div>
+            <div class="flex flex-col gap-2">
+              <label for="password2" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Confirm Password</label>
+              <input
+                id="password2"
+                v-model="form.password2"
+                required
+                type="password"
+                placeholder="••••••••"
+                class="input-field"
+              />
+              <p v-if="store.registerError.password2" class="text-[10px] text-red-500 font-bold uppercase ml-1">
+                {{ store.registerError.password2[0] }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 mt-2">
+            <input 
+              type="checkbox" 
+              id="remember" 
+              v-model="form.remember" 
+              class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary transition-all" 
+            />
+            <label for="remember" class="text-sm font-medium text-slate-500 cursor-pointer">Agree to Terms & Privacy</label>
+          </div>
+
+          <button class="btn-primary w-full !py-4 !rounded-2xl shadow-xl shadow-primary/20 mt-4 active:scale-95 transition-all">
+            Initialize My Account
+          </button>
+        </form>
+
+        <p class="text-center text-slate-500 font-medium italic">
+          Already a member? 
+          <NuxtLink to="/signin" class="text-primary font-bold hover:underline not-italic ml-1">Sign in here</NuxtLink>
+        </p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
   import { useUserStore } from '~/stores/userStore';
-  //data
+  import { reactive, ref } from 'vue';
+
   const store = useUserStore();
   const remember = ref(false);
   const form = reactive({
@@ -168,25 +179,17 @@
     password: '',
     password2: '',
     country: '',
+    remember: remember
   });
 
-  const {$toast} = useNuxtApp();
+  const { $toast } = useNuxtApp();
 
-  //functions
   async function register() {
     store.resetErrors();
     await store.register(form);
     if (store.registerSuccess) {
-      $toast.success('Registration successful', {
-        timeout: 3000,
-      });
+      $toast.success("Welcome to Boookz! Your account is ready.");
       await navigateTo('/signin');
     }
   }
 </script>
-
-<style scoped>
-.input {
-  @apply bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-3 outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all;
-}
-</style>

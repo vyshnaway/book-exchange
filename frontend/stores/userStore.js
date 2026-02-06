@@ -3,6 +3,8 @@ export const useUserStore = defineStore({
     id: 'userStore',
     state: () => ({
         userName: '',
+        firstName: '',
+        lastName: '',
         userProfileImage: "",
         userIsSearching: false,
         userIsLoggedIn: false,
@@ -25,9 +27,13 @@ export const useUserStore = defineStore({
     actions: {
         async signIn(form) {
             try {
+                const payload = {
+                    username: form.username,
+                    password: form.password
+                };
                 const res = await $fetch(this.BE_API + 'authentication/login/', {
                     method: 'POST',
-                    body: form
+                    body: payload
                 })
                 console.log(res.access);
                 this.token = res.access;
@@ -57,23 +63,21 @@ export const useUserStore = defineStore({
         },
 
         async logOut() {
-            await $fetch(this.BE_API + 'authentication/logout_all/', {
-                method: 'POST',
-                headers: { "authorization": "Bearer " + this.token }
-            })
-            // this.userIsLoggedIn = false;
-            // this.token = '';
-            this.$reset();
-            await navigateTo('/')
+            try {
+                await $fetch(this.BE_API + 'authentication/logout_all/', {
+                    method: 'POST',
+                    headers: { "authorization": "Bearer " + this.token }
+                })
+            } catch (error) {
+                console.error("Logout API failed:", error);
+            } finally {
+                this.$reset();
+                await navigateTo('/')
+            }
         },
         resetErrors() {
             this.registerError = {};
             this.loginError = "";
-        },
-
-        getRoute(event) {
-            console.log(event.target.value);
-            // this.callingComponent=event.target 
         },
 
         async getUserInfo() {
@@ -87,6 +91,8 @@ export const useUserStore = defineStore({
                 if (res) {
                     //console.log("name: ", res.at(0))
                     this.userName = res.username;
+                    this.firstName = res.first_name;
+                    this.lastName = res.last_name;
                     this.userIsLoggedIn = true;
                     this.userGiveAwayBooks = res.book_reader.giveaway_books
                     this.userWantedBooks = res.book_reader.wanted_books

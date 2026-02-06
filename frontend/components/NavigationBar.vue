@@ -1,193 +1,91 @@
 <template>
-  <nav
-    class="flex flex-wrap items-center justify-between w-full px-5 py-4 relative bg-white"
-  >
+  <nav class="flex items-center justify-between w-full h-16">
     <!-- Logo -->
-    <NuxtLink
-      to="/"
-      class="flex gap-2 justify-center items-center"
-      active-class="inactive"
-    >
-      <AppLogo />
-      <div class="flex flex-col justify-start">
-        <h1 class="font-bold text-[33px] leading-10 h-9">Boookz</h1>
-        <p class="leading-none">Book xchange website</p>
-      </div>
+    <NuxtLink to="/" class="flex items-center gap-3 active:scale-95 transition-transform">
+      <AppLogo class="w-8 h-8" />
+      <span class="font-bold text-2xl tracking-tight text-primary">Boookz</span>
     </NuxtLink>
 
-    <!-- Hamburger Menu Button -->
-    <button
-      @click="toggleMenu"
-      class="block lg:hidden p-2 rounded focus:outline-none hover:bg-gray-100"
-    >
-      <!-- Hamburger Icon -->
-      <svg
-        v-if="!isMenuOpen"
-        class="w-8 h-8 text-violet-500"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M4 6h16M4 12h16M4 18h16"
-        ></path>
-      </svg>
-      <!-- Close Icon -->
-      <svg
-        v-else
-        class="w-8 h-8 text-violet-500"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"
-        ></path>
-      </svg>
-    </button>
+    <!-- Right Side Actions -->
+    <div class="flex items-center gap-2 lg:gap-6">
+      <!-- Desktop Search -->
+      <form @submit.prevent="search" class="relative group hidden lg:block">
+        <input
+          v-model="searchQuery"
+          placeholder="Search offered books..."
+          type="text"
+          class="w-64 px-5 py-2 bg-slate-100/50 border-none rounded-2xl focus:w-80 focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-300 italic text-sm"
+        />
+        <button class="absolute right-4 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity" type="submit">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </button>
+      </form>
 
-    <!-- Collapsible Content -->
-    <div
-      :class="[
-        isMenuOpen ? 'flex' : 'hidden',
-        'lg:flex flex-col lg:flex-row gap-4 w-full lg:w-auto items-center mt-4 lg:mt-0',
-      ]"
-    >
-      <!-- Search -->
-      <div class="w-full lg:w-auto flex justify-center">
-        <form @submit.prevent="search" class="relative w-full max-w-sm">
-          <input
-            placeholder="Search offered books"
-            type="text"
-            class="bg-gray-100 rounded-lg px-3 w-full lg:w-96 h-10 lg:h-8"
-            v-model="searchQuery"
-          />
-          <button class="absolute top-0 right-2 h-full flex items-center" type="submit">
-            <img src="/MagnifyingGlass.png" alt="search icon" class="w-5 h-5" />
-          </button>
-        </form>
+      <!-- Mobile Menu Button (Visible only on mobile, mainly for Search now) -->
+      <button @click="isMenuOpen = !isMenuOpen" class="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors mr-1 w-10 h-10 flex items-center justify-center">
+        <svg v-if="!isMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <!-- Auth Action (Always Visible) -->
+      <div v-if="!userStore.userIsLoggedIn" class="flex items-center gap-2 lg:gap-6">
+        <NuxtLink to="/signin" class="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block">Sign in</NuxtLink>
+        <NuxtLink to="/register" class="btn-primary !py-2 !px-4 !text-xs sm:!text-sm !rounded-xl">Sign up</NuxtLink>
       </div>
 
-      <!-- Links -->
-      <div class="flex flex-col lg:flex-row gap-4 items-center">
-        <NuxtLink to="/about" class="hover:text-violet-500 font-semibold"
-          >About</NuxtLink
-        >
-        <NuxtLink to="/support" class="hover:text-violet-500 font-semibold"
-          >Support</NuxtLink
-        >
+      <!-- User Menu (Always Visible) -->
+      <div v-else class="flex items-center gap-2 lg:gap-4">
+        <ProfileNotificationMenu />
+        <ProfileSettingMenu />
       </div>
-
-      <!-- Auth / Profile -->
-      <ul
-        v-if="!store.userIsLoggedIn"
-        class="flex flex-col lg:flex-row gap-4 lg:gap-2 w-full lg:w-auto items-center"
-      >
-        <NuxtLink class="btn-sm lg:btn w-full lg:w-auto text-center" to="/signin"
-          >Sign in</NuxtLink
-        >
-        <NuxtLink class="btn-sm lg:btn w-full lg:w-auto text-center" to="/register"
-          >Sign up</NuxtLink
-        >
-      </ul>
-
-      <ul
-        v-else
-        class="flex gap-8 justify-center items-center w-full lg:w-auto"
-      >
-        <img
-          v-if="store.userProfileImage"
-          :src="store.userProfileImage"
-          alt="profile avatar"
-          class="w-10 h-10 lg:w-8 lg:h-8 rounded-full hover:cursor-pointer"
-          @click="redirect"
-        />
-        <img
-          v-else
-          src="../assets/img/avatar.png"
-          alt="profile avatar"
-          class="w-10 h-10 lg:w-8 lg:h-8 rounded-full"
-          @click="redirect"
-        />
-        <div class="flex gap-4 lg:gap-2">
-            <ProfileSettingMenu />
-            <ProfileNotificationMenu />
-        </div>
-      </ul>
     </div>
+
+    <!-- Mobile Menu Overlay -->
+    <Transition name="fade">
+      <div v-if="isMenuOpen" class="fixed inset-0 top-16 z-40 lg:hidden px-4 py-12 backdrop-blur-sm" @click.self="isMenuOpen = false">
+        <div class="bg-white/95 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl p-6 flex flex-col gap-6 animate-in slide-in-from-top-4 duration-300">
+          <form @submit.prevent="search" class="relative group">
+            <input
+              v-model="searchQuery"
+              placeholder="Search books..."
+              type="text"
+              class="w-full px-5 py-3 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            />
+            <button class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" type="submit">
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </button>
+          </form>
+          
+          <div v-if="!userStore.userIsLoggedIn" class="sm:hidden flex flex-col gap-3 pt-2 border-t border-slate-100">
+             <p class="text-xs font-bold uppercase text-slate-400 tracking-widest text-center mb-2">Account</p>
+             <NuxtLink to="/signin" @click="isMenuOpen = false" class="btn-outline w-full justify-center !border-slate-200 !text-slate-600">Sign in</NuxtLink>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </nav>
 </template>
 
-<script>
-import { useGoogleAPIStore } from '~/stores/googleAPIStore';
+<script setup>
+import { ref } from 'vue';
 import { useUserStore } from '~/stores/userStore';
 import { useDataStore } from '~/stores/dataStore';
 
-import 'vuetify/styles';
-import { createVuetify } from 'vuetify';
-import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
-import { ref } from 'vue'; // Import ref
+const userStore = useUserStore();
+const dataStore = useDataStore();
 
-export default {
-  setup() {
-    const vuetify = createVuetify({
-      components,
-      directives,
-    });
+const isMenuOpen = ref(false);
+const searchQuery = ref('');
 
-    const googleAPIStore = useGoogleAPIStore();
-    const dataStore = useDataStore();
-    const store = useUserStore();
-
-    const notificationshown = ref(false);
-    const settingsshown = ref(false);
-    const isMenuOpen = ref(false); // Mobile menu state
-
-    const searchQuery = ref('');
-
-    const search = () => {
-      dataStore.searchForBook(searchQuery.value);
-      searchQuery.value = '';
-      isMenuOpen.value = false; // Close menu on search
-    };
-
-    const redirect = () => {
-      isMenuOpen.value = false; // Close menu on redirect
-      return navigateTo('/profile');
-    };
-
-    const toggleMenu = () => {
-      isMenuOpen.value = !isMenuOpen.value;
-    };
-
-    const logOut = () => {
-      store.logOut();
-      isMenuOpen.value = false;
-    };
-
-    return {
-      searchQuery,
-      googleAPIStore,
-      search,
-      store,
-      logOut,
-      redirect,
-      notificationshown,
-      settingsshown,
-      isMenuOpen,
-      toggleMenu,
-    };
-  },
+const search = () => {
+  if (!searchQuery.value.trim()) return;
+  dataStore.searchForBook(searchQuery.value);
+  searchQuery.value = '';
+  isMenuOpen.value = false;
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

@@ -9,21 +9,53 @@ export const useGoogleAPIStore = defineStore({
     }),
     actions: {
         async searchForBookTitles(bookTitle, languageCode) {
-            const data = await $fetch(
-                'https://www.googleapis.com/books/v1/volumes?q=' + bookTitle + '&maxResults=' + this.book_limit +
-                "&langRestrict=" + languageCode
-            );
-            this.book_titles = [];
-            for (const index in data["items"]) {
-                this.book_titles.push(data["items"].at(index).volumeInfo.title);
+            if (!bookTitle) {
+                this.book_titles = [];
+                return;
+            }
+            try {
+                let url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(bookTitle) + '&maxResults=' + this.book_limit;
+                if (languageCode) {
+                    url += "&langRestrict=" + languageCode;
+                }
+
+                const data = await $fetch(url);
+                this.book_titles = [];
+                if (data && data["items"]) {
+                    const uniqueTitles = new Set();
+                    for (const item of data["items"]) {
+                        if (item.volumeInfo && item.volumeInfo.title) {
+                            if (!uniqueTitles.has(item.volumeInfo.title)) {
+                                uniqueTitles.add(item.volumeInfo.title);
+                                this.book_titles.push(item.volumeInfo.title);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Search for book titles failed:", error);
+                this.book_titles = [];
             }
         },
         async getBookAuthorsFromTitle(bookTitle, languageCode) {
-            const data = await $fetch(
-                'https://www.googleapis.com/books/v1/volumes?q=' + bookTitle +
-                '&maxResults=1&projection=lite&langRestrict=' + languageCode
-            );
-            this.book_authors = data["items"].at(0).volumeInfo.authors
+            if (!bookTitle) {
+                this.book_authors = [];
+                return;
+            }
+            try {
+                const data = await $fetch(
+                    'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(bookTitle) +
+                    '&maxResults=1&projection=lite&langRestrict=' + languageCode
+                );
+                if (data && data["items"] && data["items"].length > 0) {
+                    this.book_authors = data["items"].at(0).volumeInfo.authors || [];
+                } else {
+                    this.book_authors = [];
+                }
+            } catch (error) {
+                console.error("Get book authors failed:", error);
+                this.book_authors = [];
+            }
         },
     },
     getters: {},

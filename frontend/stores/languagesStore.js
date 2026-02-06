@@ -12,7 +12,7 @@ export const useLangAPIStore = defineStore({
     actions: {
 
         getAllLanguages() {
-            this.languages = ISO6391.getAllNames()
+            this.languages = ISO6391.getAllNames().sort()
             return this.languages
         },
 

@@ -1,66 +1,84 @@
 <template>
-  <div class="flex flex-col md:flex-row md:mt-32 mx-auto justify-around items-center gap-1">
-    <div class="hidden md:block w-1/2">
-      <img
-        src="../assets/img/sign-in-img.png"
-        alt="Login Illustration"
-        class="w-full h-auto object-cover rounded-lg shadow-xl"
-      />
-    </div>
+  <div class="min-h-[80vh] flex items-center justify-center p-4">
+    <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[32px] shadow-premium overflow-hidden border border-slate-100">
+      <!-- Left: Illustration -->
+      <div class="hidden lg:flex flex-col justify-center items-center bg-indigo-50/50 p-12">
+        <div class="mb-10 text-center">
+          <h2 class="text-3xl font-bold text-dark tracking-tight">Expand Your Shelf</h2>
+          <p class="text-slate-500 mt-2">Join thousands of readers exchanging stories.</p>
+        </div>
+        <img
+          src="../assets/img/sign-in-img.png"
+          alt="Login Illustration"
+          class="w-full max-w-sm drop-shadow-2xl animate-in fade-in zoom-in duration-700"
+        />
+      </div>
 
-    <div class="w-full md:w-1/3 bg-white p-8 rounded-lg shadow-2xl border border-gray-100">
-      <form
-        @submit.prevent="signIn"
-        @input="store.resetErrors"
-        class="flex flex-col justify-between gap-6"
-      >
-        <h1 class="text-4xl font-bold text-primary text-center mb-4">Welcome Back</h1>
-        
-        <div class="flex flex-col gap-1">
-          <label for="email" class="text-sm font-semibold text-secondary ml-1">Username</label>
-          <input
-            class="input w-full focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
-            type="text"
-            name="email"
-            id="email"
-            placeholder="johndoe"
-            v-model="form.username"
-          />
-          <p v-if="store.loginError" class="text-sm text-red-500 mt-1">
-            Username or password are invalid
-          </p>
+      <!-- Right: Form -->
+      <div class="p-8 lg:p-16 flex flex-col justify-center gap-10">
+        <div class="text-center lg:text-left">
+          <h1 class="text-4xl font-extrabold text-dark tracking-tight">Welcome Back</h1>
+          <p class="text-slate-500 mt-3 font-medium">Please enter your details to sign in.</p>
         </div>
 
-        <div class="flex flex-col gap-1">
-          <label for="password" class="text-sm font-semibold text-secondary ml-1">Password</label>
-          <input
-            class="input w-full focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
-            type="password"
-            name="password"
-            id="password"
-            placeholder="••••••••"
-            v-model="form.password"
-          />
-        </div>
-
-        <div class="flex items-center gap-2">
-          <input type="checkbox" name="remember" id="remember" v-model="form.remember" class="w-4 h-4 text-accent rounded border-gray-300 focus:ring-accent" />
-          <label for="remember" class="text-sm text-secondary cursor-pointer">Remember me</label>
-        </div>
-
-        <div class="flex flex-col gap-4 mt-2">
-          <button class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:translate-y-0">
-            Sign In
-          </button>
-          
-          <div class="text-center text-sm text-secondary">
-             <NuxtLink to="/register" class="text-accent hover:text-orange-600 font-semibold hover:underline">
-               Create an account
-             </NuxtLink>
+        <form @submit.prevent="signIn" @input="store.resetErrors" class="flex flex-col gap-6">
+          <div class="flex flex-col gap-2">
+            <label for="username" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Username</label>
+            <div class="relative group">
+               <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                 <font-awesome-icon icon="fa-solid fa-user" />
+               </div>
+               <input
+                v-model="form.username"
+                id="username"
+                type="text"
+                placeholder="johndoe"
+                class="input-field !pl-12"
+              />
+            </div>
           </div>
-        </div>
 
-      </form>
+          <div class="flex flex-col gap-2">
+            <label for="password" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Password</label>
+            <div class="relative group">
+               <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
+                 <font-awesome-icon icon="fa-solid fa-lock" />
+               </div>
+               <input
+                v-model="form.password"
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                class="input-field !pl-12"
+              />
+            </div>
+            <p v-if="store.loginError" class="text-xs text-red-500 font-medium ml-1 mt-1 animate-in shake duration-300">
+              Invalid username or password. Please try again.
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 cursor-pointer group">
+              <input 
+                type="checkbox" 
+                v-model="form.remember" 
+                class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary transition-all" 
+              />
+              <span class="text-sm font-medium text-slate-500 group-hover:text-dark transition-colors">Remember me</span>
+            </label>
+            <NuxtLink to="/forgot-password" class="text-sm font-semibold text-primary hover:underline">Forgot Password?</NuxtLink>
+          </div>
+
+          <button class="btn-primary w-full !py-4 !rounded-2xl shadow-xl shadow-primary/20 mt-4 active:scale-95">
+            Sign In to My Account
+          </button>
+        </form>
+
+        <p class="text-center text-slate-500 font-medium">
+          Don't have an account? 
+          <NuxtLink to="/register" class="text-primary font-bold hover:underline">Create one for free</NuxtLink>
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -68,33 +86,23 @@
 <script setup>
 import { v4 as uuidv4 } from "uuid";
 import { useUserStore } from "~/stores/userStore";
+import { reactive, ref } from "vue";
 
-//data
 const store = useUserStore();
 const remember = ref(false);
-let id = uuidv4();
+const id = uuidv4();
 const form = reactive({
   id: id,
   username: "",
   password: "",
   remember: remember,
 });
-const {$toast} = useNuxtApp();
+const { $toast } = useNuxtApp();
 
-//functions
 async function signIn() {
   await store.signIn(form);
   if (store.userIsLoggedIn) {
-    $toast.success("You are logged in", {
-      timeout: 3000,
-      
-    });
+    $toast.success("Welcome back! You're now signed in.");
   }
 }
 </script>
-
-<style scoped>
-.input {
-  @apply bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-3 outline-none;
-}
-</style>

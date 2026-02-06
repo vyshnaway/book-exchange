@@ -1,14 +1,19 @@
 <template>
-  <div class="wrapper min-h-screen bg-background font-sans text-secondary">
-    <div class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 flex justify-center py-2 transition-all">
-      <NavigationBar class="max-w-7xl w-full px-4" />
-    </div>
-    <div class="content-wrapper max-w-7xl mx-auto px-4 py-8">
-      <div class="content">
-        <!-- this where the page components go -->
-        <slot />
+  <div class="min-h-screen bg-light font-sans text-dark flex flex-col">
+    <!-- Glassmorphism Floating Header -->
+    <header class="sticky top-0 z-50 flex justify-center py-4 px-4">
+      <div class="max-w-7xl w-full glass rounded-2xl px-6 py-2">
+        <NavigationBar />
       </div>
-    </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-8">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <AppFooter />
   </div>
 </template>
 

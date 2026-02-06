@@ -1,130 +1,105 @@
 <template>
-  <div class="">
-    <div
-      class="header flex flex-col justify-between items-center py-1 pt-4 md:py-8 rounded-md min-w-full"
-    >
-      <img
-        v-if="profilePic"
-        :src="profilePic"
-        alt="profile avatar"
-        class="w-32 h-32 rounded-full"
-      />
-      <img
-        v-show="!profilePic"
-        src="../../assets/img/avatar.png"
-        alt="profile avatar"
-        class="w-32 h-32 rounded-full"
-      />
+  <div class="flex flex-col gap-8">
+    <!-- Profile Hero Header -->
+    <header class="relative overflow-hidden rounded-3xl bg-indigo-600 px-6 py-12 md:py-20 shadow-premium">
+      <!-- Decorative Elements -->
+      <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
 
-      <h2 class="text-white md:text-2xl md:font-bold">
-        {{ userStore.userName }}
-      </h2>
-      <h3 class="text-white">{{ userStore.region }}</h3>
+      <div class="relative flex flex-col items-center text-center gap-6">
+        <div class="relative group">
+          <img
+            :src="userStore.userProfileImage || avatarPlaceholder"
+            alt="Profile Avatar"
+            class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-white/20 shadow-2xl transition-transform duration-500 group-hover:scale-105"
+          />
+          <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-indigo-600">
+            <font-awesome-icon icon="fa-solid fa-check" class="text-indigo-600 text-sm" />
+          </div>
+        </div>
 
-      <div
-        class="md:mt-8 bg-white rounded-md h-24 flex flex-col md:flex-row justify-center items-center w-10/12"
-      >
-        <v-toolbar
-          color="transparent"
-          class="w-full"
-        >
-          <v-tabs
-            dark
-            background-color=""
-            grow
-            vertical
-            mobile-break-point="600px"
-            class="flex flex-col"
-            center-active
-          >
-            <v-tab @click="activeTab = 'Giveaway'">
-              <v-badge
-                floating
-                color="rgb(167 139 250)"
-                :content="`${userStore.userGiveAwayBooks.length}`"
-                max="9"
-                class="text-xs md:text-lg"
-              >
-                Giveaway
-              </v-badge>
-            </v-tab>
-
-            <v-tab @click="activeTab = 'Wanted'">
-              <v-badge
-                floating
-                color="rgb(167 139 250)"
-                :content="`${userStore.userWantedBooks.length}`"
-                max="9"
-                class="text-xs md:text-lg"
-              >
-                Wanted
-              </v-badge>
-            </v-tab>
-
-            <v-tab @click="activeTab = 'Transactions'">
-              <v-badge
-                floating
-                color="rgb(167 139 250)"
-                :content="`${userStore.userTransactions.length}`"
-                max="9"
-                class="text-xs md:text-lg"
-              >
-                Transactions
-              </v-badge>
-            </v-tab>
-
-            <v-tab @click="activeTab = 'Ratings'">
-              <v-badge
-                floating
-                color="rgb(167 139 250)"
-                :content="`${userStore.userRatings.length}`"
-                max="9"
-                class="text-xs md:text-lg"
-              >
-                Ratings
-              </v-badge>
-            </v-tab>
-          </v-tabs>
-        </v-toolbar>
+        <div class="flex flex-col gap-2">
+          <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+            {{ userStore.userName || 'Book Enthusiast' }}
+          </h2>
+          <div class="flex items-center justify-center gap-2 text-indigo-100/80 font-medium">
+            <font-awesome-icon icon="fa-solid fa-location-dot" class="text-xs" />
+            <span>{{ userStore.region || 'World Citizen' }}</span>
+          </div>
+        </div>
       </div>
-    </div>
+    </header>
 
-    <div class="content">
-      <LazyProfileGiveaway v-if="activeTab === 'Giveaway'" />
-      <LazyProfileWanted v-if="activeTab === 'Wanted'" />
-      <LazyProfileTransactions v-if="activeTab === 'Transactions'" />
-      <LazyProfileRatings v-if="activeTab === 'Ratings'" />
-    </div>
+    <!-- Navigation Tabs -->
+    <!-- Navigation Tabs -->
+    <ClientOnly>
+      <nav class="glass !bg-white/40 sticky top-24 z-30 p-2 rounded-2xl flex flex-wrap justify-between items-center gap-2">
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="tab in tabs"
+            :key="tab.value"
+            @click="activeTab = tab.value"
+            class="flex items-center gap-3 px-6 py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-300"
+            :class="activeTab === tab.value 
+              ? 'bg-primary shadow-lg shadow-primary/30 scale-[1.02]' 
+              : 'text-slate-500 hover:bg-white/60 hover:text-primary'"
+          >
+            <font-awesome-icon :icon="tab.icon" />
+            <span>{{ tab.label }}</span>
+            <span 
+              v-if="tab.count !== undefined" 
+              class="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-white/20"
+            >
+              {{ tab.count }}
+            </span>
+          </button>
+        </div>
+      </nav>
+    </ClientOnly>
+
+    <!-- Tab Content -->
+    <main class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div class="bg-white/50 rounded-3xl p-6 min-h-[400px]">
+        <LazyProfileGiveaway v-if="activeTab === 'Giveaway'" />
+        <LazyProfileWanted v-if="activeTab === 'Wanted'" />
+        <LazyProfileTransactions v-if="activeTab === 'Transactions'" />
+        <LazyProfileRatings v-if="activeTab === 'Ratings'" />
+      </div>
+    </main>
   </div>
 </template>
 
 <script setup>
-  import { useUserStore } from '~/stores/userStore';
-  definePageMeta({
-    middleware: 'auth',
-  });
-  const userStore = useUserStore();
+import { ref, computed, onBeforeMount } from 'vue';
+import { useUserStore } from '~/stores/userStore';
+import { storeToRefs } from 'pinia';
+import avatarPlaceholder from "~/assets/img/avatar.png";
+
+definePageMeta({
+  middleware: 'auth',
+});
+
+const userStore = useUserStore();
+const { 
+  userProfileImage, 
+  userName, 
+  region, 
+  userGiveAwayBooks, 
+  userWantedBooks, 
+  userTransactions, 
+  userRatings 
+} = storeToRefs(userStore);
+
+const activeTab = ref('Giveaway');
+
+const tabs = computed(() => [
+  { label: 'My Giveaway', value: 'Giveaway', icon: 'fa-solid fa-gift', count: userGiveAwayBooks.value?.length || 0 },
+  { label: 'My Wanted', value: 'Wanted', icon: 'fa-solid fa-heart', count: userWantedBooks.value?.length || 0 },
+  { label: 'History', value: 'Transactions', icon: 'fa-solid fa-receipt', count: userTransactions.value?.length || 0 },
+  { label: 'Ratings', value: 'Ratings', icon: 'fa-solid fa-star', count: userRatings.value?.length || 0 },
+]);
+
+onBeforeMount(async () => {
   await userStore.getUserInfo();
-  const activeTab = ref('Giveaway');
-
-  const profilePic = userStore.userProfileImage;
-
-  function toggleTabs(event) {
-    this.activeTab = event.target.innerText;
-  }
-
-  onBeforeMount(() => {
-    userStore.getUserInfo();
-  });
+});
 </script>
-
-<style scoped>
-  .header {
-    /* height: 500px; */
-    background: linear-gradient(93.97deg, #695ac9 0.68%, #925ac9 98.66%);
-  }
-
-  .active {
-    background: #d4cdff;
-  }
-</style>

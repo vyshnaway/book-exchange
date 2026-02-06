@@ -1,64 +1,55 @@
 <template>
-  <div class="flex flex-col mx-auto">
-    <div
-      v-if="!route.id"
-      class="flex justify-center items-center my-8"
-    >
+  <div class="flex flex-col gap-8 w-full">
+    <!-- Shelf Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-end sm:items-center gap-4 border-b border-slate-100 pb-6">
+      <div>
+        <h2 class="text-2xl font-black text-dark tracking-tight">
+          {{ route.id ? `${store.userName}'s Giveaway` : 'My Giveaway Shelf' }}
+        </h2>
+        <p class="text-slate-500 text-sm font-medium mt-1">
+          Books available for exchange or as gifts
+        </p>
+      </div>
+      
       <NuxtLink
+        v-if="!route.id"
         to="/user/addbook"
-        class="btn"
+        class="btn-primary !py-2.5 !px-5 !text-xs !rounded-xl shadow-lg shadow-primary/20 flex items-center gap-2 group"
       >
-        add more
+        <font-awesome-icon icon="fa-solid fa-plus" class="group-hover:rotate-90 transition-transform" />
+        <span>Add Book</span>
       </NuxtLink>
     </div>
 
-    <div
-      v-if="store.userGiveAwayBooks.length"
-      class="flex flex-col items-center justify-center w-full mx-auto px-4"
-    >
-      <h2
-        v-if="route.id"
-        class="font-bold text-xl m-2 self-start"
+    <!-- Books Grid -->
+    <div v-if="store.userGiveAwayBooks.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div
+        v-for="book in store.userGiveAwayBooks"
+        :key="book.pk"
+        class="flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-300"
       >
-        {{ store.userName }}'s Giveaway Books
-      </h2>
-      <h2
-        v-else
-        class="font-bold text-xl m-2 self-start"
-      >
-        My Giveaway Books
-      </h2>
-
-      <div class="flex flex-wrap gap-2 justify-center w-full">
-        <div
-          v-for="book in store.userGiveAwayBooks"
-          :key="book.pk"
-          class="mt-12 basis-1/3 sm:basis-1/4 flex flex-col justify-between gap-2"
+        <NuxtLink
+          @click="dataStore.setClickedBook(book)"
+          :to="`/books/${book.title.replaceAll('/', '-')}`"
+          class="block h-full"
         >
-          <NuxtLink
-            class="h-full"
-            @click.left="dataStore.setClickedBook(book)"
-            @click.middle="dataStore.setClickedBook(book)"
-            @click.right="dataStore.setClickedBook(book)"
-            :to="`/books/${book.title.replaceAll('/', '-')}`"
+          <ProfileBookCard :book="book" />
+        </NuxtLink>
+        
+        <div v-if="!route.id" class="flex justify-center">
+          <button
+            @click="deleteBook(book)"
+            class="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-red-500 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-red-50"
           >
-            <ProfileBookCard :book="book" />
-          </NuxtLink>
-          <div v-if="!route.id" class="btn-sm self-center">
-            <button
-              @click="deleteBook(book)"
-            >
-              Delete
-            </button>
-          </div>
+            <font-awesome-icon icon="fa-solid fa-trash-can" />
+            <span>Remove</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <div
-      v-else
-      class="mt-16"
-    >
+    <!-- Empty State -->
+    <div v-else class="py-20">
       <LazyProfilePlaceHolder />
     </div>
   </div>
@@ -68,15 +59,16 @@
   import { useUserStore } from '~/stores/userStore';
   import { useProfileStore } from '~/stores/profileStore';
   import { useDataStore } from '~/stores/dataStore';
+  
   const route = useRoute().params;
   const store = !route.id ? useUserStore() : useProfileStore();
   const dataStore = useDataStore();
 
   function deleteBook(book) {
-    store.deleteBook(book);
+    if (confirm(`Are you sure you want to remove "${book.title}"?`)) {
+      store.deleteBook(book);
+    }
   }
-
-  // await store.getUserInfo();
 </script>
 
 <style scoped></style>
