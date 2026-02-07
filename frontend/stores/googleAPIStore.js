@@ -5,6 +5,8 @@ export const useGoogleAPIStore = defineStore({
     state: () => ({
         book_titles: [],
         book_authors: [],
+        book_description: '',
+        book_cover_url: '',
         book_limit: 10,
     }),
     actions: {
@@ -37,25 +39,48 @@ export const useGoogleAPIStore = defineStore({
                 this.book_titles = [];
             }
         },
-        async getBookAuthorsFromTitle(bookTitle, languageCode) {
+        async getBookDetailsFromTitle(bookTitle, languageCode) {
             if (!bookTitle) {
                 this.book_authors = [];
+                this.book_description = '';
+                this.book_cover_url = '';
                 return;
             }
             try {
                 const data = await $fetch(
                     'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(bookTitle) +
-                    '&maxResults=1&projection=lite&langRestrict=' + languageCode
+                    '&maxResults=1&projection=full&langRestrict=' + languageCode
                 );
+
                 if (data && data["items"] && data["items"].length > 0) {
-                    this.book_authors = data["items"].at(0).volumeInfo.authors || [];
+                    const info = data["items"][0].volumeInfo;
+                    this.book_authors = info.authors || [];
+                    this.book_description = info.description || '';
+
+                    // Prefer larger images if available
+                    if (info.imageLinks) {
+                        this.book_cover_url = info.imageLinks.thumbnail || info.imageLinks.smallThumbnail || '';
+                        // Google Books URLs often use http, convert to https to avoid mixed content
+                        if (this.book_cover_url) {
+                            this.book_cover_url = this.book_cover_url.replace('http://', 'https://');
+                        }
+                    } else {
+                        this.book_cover_url = '';
+                    }
                 } else {
                     this.book_authors = [];
+                    this.book_description = '';
+                    this.book_cover_url = '';
                 }
             } catch (error) {
-                console.error("Get book authors failed:", error);
+                console.error("Get book details failed:", error);
                 this.book_authors = [];
+                this.book_description = '';
+                this.book_cover_url = '';
             }
+        },
+        async getBookAuthorsFromTitle(bookTitle, languageCode) {
+            await this.getBookDetailsFromTitle(bookTitle, languageCode);
         },
     },
     getters: {},

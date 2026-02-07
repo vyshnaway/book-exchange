@@ -116,6 +116,22 @@
           </div>
         </div>
 
+        <!-- Description Section -->
+        <div class="flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-500">
+          <label for="description" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">About the Book</label>
+          <textarea
+            id="description"
+            v-model="bookForm.description"
+            rows="4"
+            placeholder="Tell us about this copy..."
+            class="input-field min-h-[120px] py-4 resize-none"
+          ></textarea>
+          <p v-if="googleStore.book_description && bookForm.description === googleStore.book_description" class="text-[10px] text-primary/60 font-bold uppercase tracking-wider ml-1">
+            <font-awesome-icon icon="fa-solid fa-wand-magic-sparkles" class="mr-1" />
+            Auto-fetched from Library
+          </p>
+        </div>
+
         <!-- Image Upload Section -->
         <div class="flex flex-col gap-2">
           <label class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Upload Gallery</label>
@@ -141,12 +157,13 @@
           <div v-if="bookForm.image.length > 0" class="flex flex-col gap-2 mt-2">
              <div v-for="(file, index) in bookForm.image" :key="index" class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
                <div class="flex items-center gap-3 overflow-hidden">
-                 <div class="w-8 h-8 rounded-lg bg-indigo-100/50 flex items-center justify-center text-indigo-500">
-                   <font-awesome-icon icon="fa-solid fa-image" class="text-xs" />
+                 <div class="w-8 h-8 rounded-lg bg-indigo-100/50 flex items-center justify-center text-indigo-500 relative overflow-hidden">
+                   <img v-if="file.previewUrl" :src="file.previewUrl" class="w-full h-full object-cover" />
+                   <font-awesome-icon v-else icon="fa-solid fa-image" class="text-xs" />
                  </div>
                  <div class="flex flex-col min-w-0">
                    <span class="text-xs font-bold text-slate-700 truncate block max-w-[200px]">{{ file.name }}</span>
-                   <span class="text-[10px] text-slate-400">{{ (file.size / 1024).toFixed(1) }} KB</span>
+                   <span class="text-[10px] text-slate-400">{{ file.isAutoFetched ? 'Auto-fetched cover' : (file.size / 1024).toFixed(1) + ' KB' }}</span>
                  </div>
                </div>
                <button type="button" @click="removeImage(index)" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
@@ -158,8 +175,9 @@
 
         <!-- Submit Button -->
         <div class="pt-6">
-          <button type="submit" class="btn-primary w-full !rounded-2xl !py-4 shadow-xl">
-            {{ isEditMode ? 'Update Book' : 'Publish to Community' }}
+          <button type="submit" class="btn-primary w-full !rounded-2xl !py-4 shadow-xl flex items-center justify-center gap-3">
+            <span>{{ isEditMode ? 'Update Book' : 'Publish to Community' }}</span>
+            <font-awesome-icon :icon="isEditMode ? 'fa-solid fa-check' : 'fa-solid fa-paper-plane'" />
           </button>
         </div>
       </form>
@@ -300,8 +318,49 @@
   async function onBookSelect(title) {
     if (!title) return;
     const languageCode = langStore.chosenLangCode;
-    await googleStore.getBookAuthorsFromTitle(title, languageCode);
+    
+    $toast.info('Fetching details from Google Books...');
+    await googleStore.getBookDetailsFromTitle(title, languageCode);
+    
+    // Populate authors and description
     bookForm.author = googleStore.book_authors;
+    if (googleStore.book_description) {
+      bookForm.description = googleStore.book_description;
+    }
+    
+    // Fetch and attach cover image
+    if (googleStore.book_cover_url) {
+      await fetchAndAttachCover(googleStore.book_cover_url, title);
+    }
+  }
+
+  async function fetchAndAttachCover(url, title) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      
+      // Create a file object from the blob
+      const fileName = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_cover.jpg`;
+      const file = new File([blob], fileName, { type: 'image/jpeg' });
+      
+      // Add custom properties for UI feedback
+      file.previewUrl = url;
+      file.isAutoFetched = true;
+      
+      // Check if we already have an auto-fetched image and replace it
+      const autoFetchedIndex = bookForm.image.findIndex(img => img.isAutoFetched);
+      if (autoFetchedIndex !== -1) {
+        bookForm.image.splice(autoFetchedIndex, 1, file);
+      } else {
+        // Add to the beginning of the gallery
+        bookForm.image.unshift(file);
+      }
+      
+      $toast.success('Cover image auto-fetched!');
+    } catch (error) {
+      console.error('Failed to fetch cover image:', error);
+      $toast.error('Could not fetch book cover automatically.');
+    }
   }
 
   function getLangfullName() {
@@ -310,10 +369,12 @@
   }
 
   function updateFiles(files) {
-    console.log("Files selected:", files);
     if (!files.length) return;
     for (let i = 0; i < files.length; i++) {
-        bookForm.image.push(files[i]);
+        const file = files[i];
+        // Generate preview URL for local files
+        file.previewUrl = URL.createObjectURL(file);
+        bookForm.image.push(file);
     }
     // Clear the input so the user can select the same file again if needed
     const input = document.getElementById('book-images');

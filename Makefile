@@ -1,4 +1,4 @@
-.PHONY: help dev up down build logs restart migrate makemigrations shell django-shell superuser frontend-install frontend-dev frontend-build
+.PHONY: help  up down build logs restart migrate makemigrations shell django-shell superuser frontend-install frontend-dev frontend-build
 
 # Docker Compose File
 COMPOSE_FILE = docker-compose.yml
@@ -12,6 +12,10 @@ help: ## Show this help message
 	@echo ''
 	@echo 'Targets:'
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+# Unified Dev Environment
+dev: ## Start dev environment (Docker)
+	docker-compose -f $(COMPOSE_FILE) up -d
 
 # Docker Management
 deploy: ## Deploy the project (build and start all services)
@@ -28,9 +32,6 @@ build: ## Build the Docker images
 
 logs: ## View logs from containers (follow mode)
 	docker-compose -f $(COMPOSE_FILE) logs -f
-
-restart: ## Restart services
-	docker-compose -f $(COMPOSE_FILE) restart
 
 # Backend (Django within Docker)
 migrate: ## Run database migrations
@@ -52,11 +53,11 @@ test: ## Run backend tests
 	docker-compose -f $(COMPOSE_FILE) exec $(WEB_SERVICE) python manage.py test
 
 # Frontend (Nuxt.js)
-frontend-install: ## Install frontend dependencies
+frontend-dev: ## Run frontend in development mode (Docker)
+	docker-compose -f $(COMPOSE_FILE) logs -f frontend
+
+frontend-install: ## Install frontend dependencies (Local)
 	cd $(FRONTEND_DIR) && npm install
 
-frontend-dev: ## Run frontend in development mode
-	cd $(FRONTEND_DIR) && npm run dev
-
-frontend-build: ## Build frontend for production
+frontend-build: ## Build frontend for production (Local)
 	cd $(FRONTEND_DIR) && npm run build

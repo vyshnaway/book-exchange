@@ -55,10 +55,10 @@ We implement Stateless Authentication using **JSON Web Tokens (JWT)**.
 *   **Mechanism:** Upon login, the server issues an `access` token and a `refresh` token.
 *   **Validation:** Every API request includes the `access` token in the header. The backend validates it without needing to check the database session, increasing performance.
 
-### Third-Party Integration: Google Books API
+<!-- ### Third-Party Integration: Google Books API
 To enhance user experience (UX), we integrated the **Google Books API**.
 *   **Function:** When a user lists a book, the system queries Google's database using the title.
-*   **Benefit:** Automatically populates images, authors, and categories, ensuring data consistency and saving time.
+*   **Benefit:** Automatically populates images, authors, and categories, ensuring data consistency and saving time. -->
 
 ### Infrastructure: Multi-Container Docker Setup
 The entire application is containerized for maximum reliability.

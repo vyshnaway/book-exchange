@@ -14,10 +14,10 @@ This project uses **Docker** to ensure it runs exactly the same on every compute
     chmod +x scripts/setup_env.sh
     sudo ./scripts/setup_env.sh
     ```
-    *Note: If it asks you to log out, calculate `logout` or restart your computer.*
+    *Note: If it asks you to log out, logout or restart your computer.*
 4.  **Start Services**:
     ```bash
-    make dev
+    make up
     ```
     *This starts the DB, Backend, and Frontend in the background.*
 
@@ -38,7 +38,7 @@ This project uses **Docker** to ensure it runs exactly the same on every compute
     *   Run the Linux setup script (from the Linux section above) to get `make`.
     *   **Start Services**:
         ```bash
-        make dev
+        make up
         ```
     *   *Access the site at `localhost:3000` in your Windows browser.*
 
@@ -53,7 +53,7 @@ This project uses **Docker** to ensure it runs exactly the same on every compute
     *   Open Terminal and run: `xcode-select --install`
 3.  **Start Services**:
     ```bash
-    make dev
+    make up
     ```
 
 ---
@@ -62,7 +62,7 @@ This project uses **Docker** to ensure it runs exactly the same on every compute
 
 | Command | Action |
 | :--- | :--- |
-| `make dev` | Standard way to start the project (DB + Web + Frontend). |
+| `make up` | Standard way to start the project (DB + Web + Frontend). |
 | `make deploy` | Rebuilds everything and starts (best for final testing). |
 | `make down` | Stops and removes all containers. |
 | `make logs` | Shows real-time errors from the server. |
@@ -79,7 +79,7 @@ Run `sudo ./scripts/setup_env.sh` again, and **Restart your computer**.
 Another program (or an old version of this app) is stuck.
 1.  Run `make down`.
 2.  If that doesn't work, run `docker system prune` (Warning: deletes unused data).
-3.  Try `make dev` again.
+3.  Try `make up` again.
 
 ### "Make command not found" (Windows)
 You are likely using PowerShell. Please switch to the **WSL2 (Ubuntu)** terminal.
