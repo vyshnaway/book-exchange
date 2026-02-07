@@ -55,7 +55,8 @@ echo "Waiting for Database to be ready..."
 
 RETRIES=30
 while [ $RETRIES -gt 0 ]; do
-    HEALTH=$(docker inspect --format='{{.State.Health.Status}}' repo-db-1 2>/dev/null || echo "starting")
+    DB_CONTAINER=$(docker-compose ps -q db)
+    HEALTH=$(docker inspect --format='{{.State.Health.Status}}' $DB_CONTAINER 2>/dev/null || echo "starting")
     if [ "$HEALTH" == "healthy" ]; then
         echo -e "${GREEN}Database is Healthy! 🟢${NC}"
         break

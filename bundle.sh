@@ -21,6 +21,11 @@ zip -r "$OUTPUT_FILE" . \
     -x "*.vscode*" \
     -x "*.idea*" \
     -x "*.pyc" \
-    -x "*.zip"
+    -x "*.zip" \
+    -x "*.env" \
+    -x "*media/*" \
+    -x "*.sqlite3" \
+    -x "*migrations/*" \
+    -x ".tasklog"
 
 echo "Project bundled into $OUTPUT_FILE"
