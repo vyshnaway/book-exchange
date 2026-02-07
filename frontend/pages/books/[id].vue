@@ -1,5 +1,5 @@
 <template>
-  <div v-if="book" class="max-w-7xl mx-auto px-4 py-8 md:py-16 animate-in fade-in duration-700">
+  <div v-if="book && book.title" class="max-w-7xl mx-auto px-4 py-8 md:py-16 animate-in fade-in duration-700">
     <!-- Hero / Main Book Info Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
       
@@ -118,6 +118,24 @@
               Propose Exchange
             </button>
           </div>
+
+          <!-- Management Actions for Owner -->
+          <div v-if="username === book.book_owner.username" class="flex items-center gap-3 w-full sm:w-auto">
+            <NuxtLink
+              :to="`/user/addbook?edit=${book.pk}`"
+              class="flex-1 sm:flex-none text-xs font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-slate-100 hover:bg-primary/5"
+            >
+              <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+              <span>Edit Book</span>
+            </NuxtLink>
+            <button
+              @click="deleteBook"
+              class="flex-1 sm:flex-none text-xs font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-slate-100 hover:bg-red-50"
+            >
+              <font-awesome-icon icon="fa-solid fa-trash-can" />
+              <span>Remove</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -164,6 +182,7 @@
   const userStore = useUserStore();
   const book = computed(() => store.clickedBook);
   const username = computed(() => userStore.userName);
+  const { $toast } = useNuxtApp();
 
   const showModal = ref(false);
   const showTrade = ref(false);
@@ -190,8 +209,41 @@
     }, 100);
   }
 
-  onMounted(() => {
-    if (!book.value) return;
+  async function deleteBook() {
+    if (confirm(`Are you sure you want to remove "${book.value.title}"?`)) {
+      try {
+        await userStore.deleteBook(book.value);
+        $toast.success('Book removed successfully');
+        await navigateTo('/profile');
+      } catch (error) {
+        console.error('Deletion error:', error);
+        $toast.error('Failed to delete book. Please try again.');
+      }
+    }
+  }
+
+  const route = useRoute();
+
+  onMounted(async () => {
+    // If book data is missing (e.g. page refresh), try to find it
+    if (!book.value || !book.value.title) {
+        // Ensure we have the latest data
+        if (store.giveAwayBooks.length === 0 && store.wantedBooks.length === 0) {
+            await store.updateData();
+        }
+
+        const paramId = route.params.id;
+        // Search in both lists
+        const allBooks = [...store.giveAwayBooks, ...store.wantedBooks];
+        // Match logic: title in URL matches book.title (handling / vs - replacement)
+        const foundBook = allBooks.find(b => b.title.replaceAll('/', '-') === paramId || b.title === paramId);
+        
+        if (foundBook) {
+            store.setClickedBook(foundBook);
+        }
+    }
+
+    if (!book.value || !book.value.title) return; // Still no book found
 
     if (book.value.book_shelf === "wanted") {
       const match = userStore.userGiveAwayBooks.find(b => b.title === book.value.title);

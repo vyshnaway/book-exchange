@@ -15,10 +15,11 @@ This project uses **Docker** to ensure it runs exactly the same on every compute
     sudo ./scripts/setup_env.sh
     ```
     *Note: If it asks you to log out, calculate `logout` or restart your computer.*
-4.  **Deploy**:
+4.  **Start Services**:
     ```bash
-    make deploy
+    make dev
     ```
+    *This starts the DB, Backend, and Frontend in the background.*
 
 ---
 
@@ -35,26 +36,37 @@ This project uses **Docker** to ensure it runs exactly the same on every compute
 3.  **Setup within Ubuntu**:
     *   Inside the Ubuntu terminal, git clone your project.
     *   Run the Linux setup script (from the Linux section above) to get `make`.
-    *   **Deploy**:
+    *   **Start Services**:
         ```bash
-        make deploy
+        make dev
         ```
-    *   *Access the site at `localhost:3000` in your Windows Chrome browser.*
+    *   *Access the site at `localhost:3000` in your Windows browser.*
 
 ---
 
-## macOS (Intel or M1/M2/M3)
+## macOS (Intel or Silicon)
 
 1.  **Install Docker Desktop**:
-    *   Download from [docker.com](https://www.docker.com/products/docker-desktop/) (Choose "Apple Chip" for M1/M2/M3).
+    *   Download from [docker.com](https://www.docker.com/products/docker-desktop/).
     *   Open the app and let it run in the background.
 2.  **Install Command Line Tools**:
     *   Open Terminal and run: `xcode-select --install`
-    *   (This gives you `git` and `make`).
-3.  **Deploy**:
+3.  **Start Services**:
     ```bash
-    make deploy
+    make dev
     ```
+
+---
+
+## Useful Commands
+
+| Command | Action |
+| :--- | :--- |
+| `make dev` | Standard way to start the project (DB + Web + Frontend). |
+| `make deploy` | Rebuilds everything and starts (best for final testing). |
+| `make down` | Stops and removes all containers. |
+| `make logs` | Shows real-time errors from the server. |
+| `make restart` | Quickly restarts the web server. |
 
 ---
 
@@ -63,10 +75,11 @@ This project uses **Docker** to ensure it runs exactly the same on every compute
 ### "Permission Denied" (Linux)
 Run `sudo ./scripts/setup_env.sh` again, and **Restart your computer**.
 
-### "Port 8000/3000 already in use"
-Another program (or an old version of this app) is running.
-1.  Run `make down` (or `docker-compose down`).
-2.  Try `make deploy` again.
+### "Port 3000 or 8000 already in use"
+Another program (or an old version of this app) is stuck.
+1.  Run `make down`.
+2.  If that doesn't work, run `docker system prune` (Warning: deletes unused data).
+3.  Try `make dev` again.
 
 ### "Make command not found" (Windows)
-You are likely using PowerShell. Please switch to **WSL2 (Ubuntu)** terminal as described in the Windows section.
+You are likely using PowerShell. Please switch to the **WSL2 (Ubuntu)** terminal.

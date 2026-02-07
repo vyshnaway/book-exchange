@@ -23,6 +23,7 @@ export const useUserStore = defineStore({
         chosenBookForATrade: {},
         registerSuccess: false,
         addBookSuccessfull: false,
+        updateBookSuccessful: false,
     }),
     actions: {
         async signIn(form) {
@@ -120,25 +121,58 @@ export const useUserStore = defineStore({
                     },
                     body: form
                 })
+                console.log("Response from add book:", res);
                 if (res.success) {
                     this.addBookSuccessfull = true;
                     await this.getUserInfo();
+                } else {
+                    console.error("Add book failed (success flag missing or false):", res);
                 }
             }
             catch (error) {
+                console.error("Add book API error:", error);
                 this.addBookError = error.data;
                 this.addBookSuccessfull = false;
             }
         },
 
         async deleteBook(book) {
-            const res = await $fetch(this.BE_API + 'data/delete/' + book.pk, {
-                method: 'DELETE',
-                headers: {
-                    "authorization": "Bearer " + this.token,
-                },
-            })
-            await this.getUserInfo();
+            try {
+                const res = await $fetch(this.BE_API + 'data/delete/' + book.pk, {
+                    method: 'DELETE',
+                    headers: {
+                        "authorization": "Bearer " + this.token,
+                    },
+                })
+                await this.getUserInfo();
+            } catch (error) {
+                console.error("Failed to delete book:", error);
+                throw error; // Re-throw so components can handle it
+            }
+        },
+
+        async updateBook(bookId, form, shelf) {
+            try {
+                const res = await $fetch(this.BE_API + 'data/update/' + bookId + '/' + shelf, {
+                    method: 'PUT',
+                    headers: {
+                        "authorization": "Bearer " + this.token,
+                    },
+                    body: form
+                })
+                console.log("Response from update book:", res);
+                if (res.success) {
+                    this.updateBookSuccessful = true;
+                    await this.getUserInfo();
+                } else {
+                    console.error("Update book failed:", res);
+                    this.updateBookSuccessful = false;
+                }
+            } catch (error) {
+                console.error("Update book API error:", error);
+                this.updateBookSuccessful = false;
+                throw error;
+            }
         },
 
         async startTransaction(initiator_book, receiver_book) {

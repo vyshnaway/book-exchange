@@ -10,8 +10,16 @@ export const useCountryStore = defineStore({
     }),
     actions: {
         getAllCountries() {
-            this.countries = getNames().sort();
-            return this.countries;
+            try {
+                console.log("getAllCountries called. getNames:", getNames);
+                const names = getNames();
+                console.log("getNames result length:", names ? names.length : 'null');
+                this.countries = names.sort();
+                return this.countries;
+            } catch (e) {
+                console.error("Error in getAllCountries:", e);
+                return [];
+            }
         },
 
         chooseCountry(countryName) {

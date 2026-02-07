@@ -159,19 +159,19 @@ class TransactionForProfileSerializer(serializers.ModelSerializer):
     
     def get_book_reader_initiator(self, obj):
         init_reader = BookReaderSerializer(obj.book_reader_initiator, context=self.context).data
-        return init_reader['username'] if init_reader is not None else init_reader 
+        return init_reader if init_reader is not None else init_reader 
 
     def get_book_reader_receiver(self, obj):
         receive_reader = BookReaderSerializer(obj.book_reader_receiver, context=self.context).data
-        return receive_reader['username'] if receive_reader is not None else receive_reader 
+        return receive_reader if receive_reader is not None else receive_reader 
 
     def get_initiator_book(self, obj):
         init_book = BookSerializer(obj.initiator_book, context=self.context).data
-        return init_book['title'] if init_book is not None else init_book 
+        return {'title': init_book['title'], 'pk': init_book['pk']} if init_book is not None else init_book 
 
     def get_receiver_book(self, obj):
         receive_book = BookSerializer(obj.receiver_book, context=self.context).data
-        return receive_book['title'] if receive_book is not None else receive_book 
+        return {'title': receive_book['title'], 'pk': receive_book['pk']} if receive_book is not None else receive_book 
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:

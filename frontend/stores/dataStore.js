@@ -10,73 +10,87 @@ export const useDataStore = defineStore({
     randomBook: {},
     clickedBook: {},
     searchResults: [],
-    searchResults: [],
   }),
   actions: {
-    async getWantedBooksFromDB(countryCode = null, showOwnBooks = true) {
-      const res = await $fetch(this.BE_API + 'data/wanted/');
-      const userStore = useUserStore();
+    async getWantedBooksFromDB(countryName = null, showOwnBooks = true) {
+      const url = this.BE_API + 'data/wanted/';
+      try {
+        const res = await $fetch(url);
+        const userStore = useUserStore();
+        let filteredRes = res;
 
-      const targetCountry = countryCode;
-      let filteredRes = res;
+        // Filter by country name if provided
+        if (countryName) {
+          filteredRes = filteredRes.filter(item => {
+            const bookCountry = item.book_owner?.country || '';
+            return bookCountry.toLowerCase().includes(countryName.toLowerCase());
+          });
+        }
 
-      if (targetCountry) {
-        filteredRes = filteredRes.filter(item => {
-          return (item.book_owner.country === targetCountry)
-        })
+        if (userStore.userIsLoggedIn && !showOwnBooks) {
+          filteredRes = filteredRes.filter(item => {
+            return (item.book_owner.username !== userStore.userName)
+          })
+        }
+
+        this.wantedBooks = filteredRes;
+      } catch (err) {
+        console.error(`[dataStore] Failed to fetch wanted books from ${url}:`, err);
+        throw err;
       }
-
-      if (userStore.userIsLoggedIn && !showOwnBooks) {
-        filteredRes = filteredRes.filter(item => {
-          return (item.book_owner.username !== userStore.userName)
-        })
-      }
-
-      this.wantedBooks = filteredRes;
     },
 
-    async getOfferedBooksFromDB(countryCode = null, showOwnBooks = true) {
-      const res = await $fetch(this.BE_API + 'data/giveaway/');
-      const userStore = useUserStore();
+    async getOfferedBooksFromDB(countryName = null, showOwnBooks = true) {
+      const url = this.BE_API + 'data/giveaway/';
+      try {
+        const res = await $fetch(url);
+        const userStore = useUserStore();
+        let filteredRes = res;
 
-      const targetCountry = countryCode;
-      let filteredRes = res;
+        // Filter by country name if provided
+        if (countryName) {
+          filteredRes = filteredRes.filter(item => {
+            // Case-insensitive string match on country name
+            const bookCountry = item.book_owner?.country || '';
+            return bookCountry.toLowerCase().includes(countryName.toLowerCase());
+          });
+        }
 
-      if (targetCountry) {
-        filteredRes = filteredRes.filter(item => {
-          return (item.book_owner.country === targetCountry)
-        })
+        if (userStore.userIsLoggedIn && !showOwnBooks) {
+          filteredRes = filteredRes.filter(item => {
+            return (item.book_owner.username !== userStore.userName)
+          })
+        }
+
+        this.giveAwayBooks = filteredRes;
+        this.randomBook = this.giveAwayBooks[Math.floor(Math.random(1) * this.giveAwayBooks.length)];
+      } catch (err) {
+        console.error(`[dataStore] Failed to fetch offered books from ${url}:`, err);
+        throw err;
       }
-
-      if (userStore.userIsLoggedIn && !showOwnBooks) {
-        filteredRes = filteredRes.filter(item => {
-          return (item.book_owner.username !== userStore.userName)
-        })
-      }
-
-      this.giveAwayBooks = filteredRes;
-      this.randomBook = this.giveAwayBooks[Math.floor(Math.random(1) * this.giveAwayBooks.length)];
     },
+
     setClickedBook(book) {
       this.clickedBook = book;
-      this.persist
     },
 
     async searchForBook(book_title) {
-      const res = await $fetch(this.BE_API + 'data/search?search=' + book_title);
-      this.searchResults = res;
-      await navigateTo("/SearchResults")
+      try {
+        const res = await $fetch(this.BE_API + 'data/search?search=' + book_title);
+        this.searchResults = res;
+        await navigateTo("/SearchResults")
+      } catch (err) {
+        console.error(`[dataStore] Search failed for "${book_title}":`, err);
+        throw err;
+      }
     },
-
 
     async updateData() {
       await this.getWantedBooksFromDB();
       await this.getOfferedBooksFromDB();
     }
-
   },
 
-  //to get specific parts of data, like select <items> from <container> WHERE <condition>
   getters: {
     BE_API() {
       return (useRuntimeConfig().apiBase || useRuntimeConfig().public.apiBase).replace(/\/$/, '') + '/';
@@ -88,5 +102,3 @@ export const useDataStore = defineStore({
     storage: persistedState.localStorage,
   },
 });
-
-

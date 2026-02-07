@@ -62,7 +62,7 @@
       <div class="bg-white/50 rounded-3xl p-6 min-h-[400px]">
         <LazyProfileGiveaway v-if="activeTab === 'Giveaway'" />
         <LazyProfileWanted v-if="activeTab === 'Wanted'" />
-        <LazyProfileTransactions v-if="activeTab === 'Transactions'" />
+        <LazyProfileTransactions v-if="activeTab === 'Transactions'" :editable="true" />
         <LazyProfileRatings v-if="activeTab === 'Ratings'" />
       </div>
     </main>
@@ -93,9 +93,9 @@ const {
 const activeTab = ref('Giveaway');
 
 const tabs = computed(() => [
-  { label: 'My Giveaway', value: 'Giveaway', icon: 'fa-solid fa-gift', count: userGiveAwayBooks.value?.length || 0 },
-  { label: 'My Wanted', value: 'Wanted', icon: 'fa-solid fa-heart', count: userWantedBooks.value?.length || 0 },
-  { label: 'History', value: 'Transactions', icon: 'fa-solid fa-receipt', count: userTransactions.value?.length || 0 },
+  { label: 'Giveaway', value: 'Giveaway', icon: 'fa-solid fa-gift', count: userGiveAwayBooks.value?.length || 0 },
+  { label: 'Wanted', value: 'Wanted', icon: 'fa-solid fa-heart', count: userWantedBooks.value?.length || 0 },
+  { label: 'Exchanges', value: 'Transactions', icon: 'fa-solid fa-receipt', count: userTransactions.value?.length || 0 },
   { label: 'Ratings', value: 'Ratings', icon: 'fa-solid fa-star', count: userRatings.value?.length || 0 },
 ]);
 

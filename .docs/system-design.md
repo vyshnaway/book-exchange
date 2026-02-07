@@ -11,28 +11,34 @@ graph TD
     User((User))
     Browser[Web Browser]
     
-    subgraph "The 'Box' (Docker)"
-        Frontend[Frontend / Nuxt.js\n(The Waiter)]
-        Backend[Backend / Django\n(The Kitchen)]
-        DB[(PostgreSQL Database\n(The Fridge))]
+    subgraph "Docker Environment"
+        subgraph "Frontend Container"
+            Frontend[Frontend / Nuxt.js\n(The Waiter)]
+        end
+        subgraph "Backend Container"
+            Backend[Backend / Django\n(The Kitchen)]
+        end
+        subgraph "Database Container"
+            DB[(PostgreSQL\n(The Fridge))]
+        end
     end
     
     ExtAPI[Google Books API\n(The Library Catalog)]
 
     %% Interactions
     User -->|Clicks Button| Browser
-    Browser -->|1. Asks for Page| Frontend
-    Browser -->|2. Asks for Data (JSON)| Backend
+    Browser -->|1. Request Page| Frontend
+    Browser -->|2. API Calls (JSON)| Backend
     
-    Backend -->|Saves/Reads Data| DB
-    Backend -->|Looks up Book Details| ExtAPI
+    Backend -->|Reads/Writes| DB
+    Backend -->|Fetches Data| ExtAPI
 ```
 
 ### Simple Explanation
 1.  **Frontend (Nuxt.js):** Runs on port `3000`. It acts like a **Waiter**. It shows you the menu (pages) and takes your order (clicks).
-2.  **Backend (Django):** Runs on port `8000`. It acts like the **Chef**. It receives the order, cooks the food (processes logic), and authenticates who you are.
-3.  **Database (PostgreSQL):** Acts like the **Fridge**. It keeps the ingredients (Users, Books) safe and cold (organized).
-4.  **Docker:** The "Box" that holds the Waiter, Chef, and Fridge together so they can travel to any computer.
+2.  **Backend (Django):** Runs on port `8000`. It acts like the **Chef**. It receives the order, cooks the food (processes logic), and authenticates you.
+3.  **Database (PostgreSQL):** Acts like the **Fridge**. It keeps the ingredients (Users, Books, Transactions) safe and organized.
+4.  **Docker:** The "Box" that holds everything together. We use a **Multi-Container Setup** so each part works perfectly every time.
 
 ---
 
@@ -42,67 +48,67 @@ We store data in **Tables** (like Excel sheets) that are connected to each other
 
 ```mermaid
 erDiagram
-    USER ||--o{ BOOK : "Owns"
-    USER ||--o{ TRANSACTION : "Participates in"
+    USER ||--o| BOOKREADER : "Has Profile"
+    BOOKREADER ||--o{ BOOK : "Owns / Wants"
+    BOOKREADER ||--o{ NOTIFICATION : "Receives"
+    USER ||--o{ COMMENT : "Writes"
     
-    BOOK ||--o{ TRANSACTION : "Is exchanged in"
+    BOOK ||--o{ IMAGE : "Has Gallery"
+    BOOK ||--o{ TRANSACTION : "Involved in"
+    BOOK }o--|| AUTHOR : "Written by"
+    BOOK }o--|| CATEGORY : "Tagged as"
 
     USER {
-        string username "Name"
+        string username "Display Name"
         string email "Login ID"
-        string country "Location"
     }
 
     BOOK {
         string title "Book Name"
-        string isbn "Unique Barcode"
-        boolean is_giveaway "For Free?"
-        int owner_id "Who owns this?"
+        string description "Back cover text"
+        string language "Language"
+        pk id "Unique ID"
     }
 
     TRANSACTION {
-        string token "Unique Receipt ID"
-        int buyer_id "Who wants it?"
-        int seller_id "Who has it?"
-        string status "New/Accepted/Done"
+        uuid token "Secret Code"
+        string status "Pending/Confirmed/Done"
     }
 ```
 
 ### The Relationships Explained
-*   **1 User -> Many Books:** A single user (like you) can upload 10 different books to their profile.
-*   **Transaction:** This is the magic link. It connects a **Buyer** + **Seller** + **Book**. It's like a receipt that tracks the deal from "Requested" to "Completed".
+*   **One-to-One (User -> Profile):** Every user account has exactly one profile (BookReader) for their settings and country.
+*   **One-to-Many (Book -> Images):** Each book can have many images in its gallery.
+*   **Many-to-Many (Book -> Authors/Categories):** A book can have multiple authors, and an author can write multiple books. Similarly for categories.
 
 ---
 
 ## 3. How Data Moves (The Story of a Swap)
 
-Let's imagine **Alice** wants a book from **Bob**.
+Imagine **Alice** wants a book from **Bob**.
 
-### Step 1: The Request
-*   **Alice** clicks "Request Swap".
-*   **Frontend** sends a message to Backend: *"Hey, User #1 (Alice) wants Book #50 from User #2 (Bob)."*
-*   **Backend** checks: "Does Alice have permission? Yes." -> Creates a **Transaction** record (Status: `PENDING`).
+### Step 1: The Discovery
+*   **Alice** searches for "Harry Potter". The **Frontend** asks the **Backend**.
+*   The **Backend** looks in the **Fridge (DB)** and tells Alice: "Bob has it on his Giveaway shelf!"
 
-### Step 2: The Notification
-*   **Bob** logs in.
-*   **Backend** tells Frontend: *"Hey, Bob has 1 new notification."*
-*   Bob sees "Alice wants your Harry Potter book."
+### Step 2: The Request
+*   Alice clicks "Propose Exchange".
+*   The **Backend** creates a **Transaction** (Status: `PENDING`).
+*   The **Backend** also adds a **Notification** for Bob.
 
-### Step 3: The Exchange
-*   **Bob** clicks "Accept".
-*   **Backend** updates the Transaction status to `ACCEPTED`.
-*   *(Optional Future Step)*: The system could email Alice saying "Good news! Bob accepted."
+### Step 3: The Acceptance
+*   **Bob** clicks "Accept". The status changes to `ACCEPTED`.
+*   Both users see each other's details to arrange the physical exchange.
 
 ---
 
 ## 4. Security (Keeping it Safe)
 
-1.  **Secret Tokens (UUIDs):**
-    *   Instead of numbering transactions like `#1`, `#2`, `#3`, we use long random codes (like `a1b2-c3d4...`).
-    *   **Why?** So a hacker can't guess transaction #4 just by adding 1 to transaction #3.
+1.  **UUIDs for Transactions:**
+    *   Instead of `#1`, `#2`, we use `a1b2-c3d4...`. It’s unguessable, so hackers can't "creep" on other people's matches.
 
-2.  **The "bouncer" (CORS):**
-    *   Our Backend has a list of allowed visitors. It only talks to our Frontend (`localhost:3000`). If a hacker tries to connect from `evil-site.com`, the Backend blocks them.
+2.  **Bouncer (CORS):**
+    *   The Backend only allows requests from our trusted Frontend. Anyone else is blocked at the door.
 
-3.  **No Naked Passwords:**
-    *   We never save passwords like `monkeys123`. We turn them into gibberish `xd87&^%...` (Hashing) so even if someone steals the database, they can't login as you.
+3.  **Password Hashing:**
+    *   We don't store passwords. we store a "scrambled" version. Even if the database is stolen, your password remains a secret.

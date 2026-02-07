@@ -36,15 +36,24 @@
           <ProfileBookCard :book="book" />
         </NuxtLink>
         
-        <div v-if="!route.id" class="flex justify-center">
-          <button
-            @click="deleteBook(book)"
-            class="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-red-500 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-red-50"
-          >
-            <font-awesome-icon icon="fa-solid fa-trash-can" />
-            <span>Remove</span>
-          </button>
-        </div>
+        <ClientOnly>
+          <div v-if="!route.id" class="flex justify-center gap-2">
+            <NuxtLink
+              :to="`/user/addbook?edit=${book.pk}`"
+              class="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-primary transition-colors flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-primary/5"
+            >
+              <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+              <span>Edit</span>
+            </NuxtLink>
+            <button
+              @click="deleteBook(book)"
+              class="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-red-500 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-red-50"
+            >
+              <font-awesome-icon icon="fa-solid fa-trash-can" />
+              <span>Remove</span>
+            </button>
+          </div>
+        </ClientOnly>
       </div>
     </div>
 
@@ -64,9 +73,13 @@
   const store = !route.id ? useUserStore() : useProfileStore();
   const dataStore = useDataStore();
 
-  function deleteBook(book) {
+  async function deleteBook(book) {
     if (confirm(`Are you sure you want to remove "${book.title}"?`)) {
-      store.deleteBook(book);
+      try {
+        await store.deleteBook(book);
+      } catch (error) {
+        alert('Failed to delete book. Please try again.');
+      }
     }
   }
 </script>

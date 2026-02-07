@@ -32,18 +32,19 @@ The application follows a **Decoupled Client-Server Architecture**, separating t
 *   **Technology:** **PostgreSQL**.
 *   **Role:** Relational database management system (RDBMS) storing all structured data.
 *   **Schema Highlights:**
-    *   `Users`: Profiles and authentication credentials.
-    *   `Books`: Metadata (ISBN, Title, Author) and ownership status.
-    *   `Transactions`: Relational table linking a Buyer (User), Seller (User), and Product (Book).
+    *   `Users`: Authentication credentials.
+    *   `BookReader`: User profiles, country, and notifications.
+    *   `Books`: Metadata (Title, Author) and images gallery.
+    *   `Transactions`: Linking Buyer, Seller, and Book state.
 
 ### D. The Interface (API)
 *   **Protocol:** **REST (Representational State Transfer)** over HTTP.
 *   **Format:** JSON (JavaScript Object Notation).
 *   **Data Flow:**
-    1.  **Request:** Frontend sends an HTTP `GET` request to `/api/books/`.
+    1.  **Request:** Frontend sends an HTTP `GET` request to `/api/data/giveaway/`.
     2.  **Processing:** Django queries the PostgreSQL database via ORM.
-    3.  **Serialization:** Django REST Framework converts the Python objects into JSON.
-    4.  **Response:** Frontend receives JSON and renders the list of books.
+    3.  **Serialization:** Django REST Framework converts Python objects into JSON.
+    4.  **Response:** Frontend receives JSON and renders the UI.
 
 ---
 
@@ -51,18 +52,18 @@ The application follows a **Decoupled Client-Server Architecture**, separating t
 
 ### Authentication & Authorization (JWT)
 We implement Stateless Authentication using **JSON Web Tokens (JWT)**.
-*   **Mechanism:** Upon successful login, the server issues an `access` token and a `refresh` token.
-*   **Validation:** Every subsequent API request includes the `access` token in the HTTP Header. The backend validates the signature without needing to check the database session every time, reducing load.
+*   **Mechanism:** Upon login, the server issues an `access` token and a `refresh` token.
+*   **Validation:** Every API request includes the `access` token in the header. The backend validates it without needing to check the database session, increasing performance.
 
 ### Third-Party Integration: Google Books API
 To enhance user experience (UX), we integrated the **Google Books API**.
-*   **Function:** When a user lists a book, the system queries Google's database using the title/ISBN.
-*   **Benefit:** Automatically populates metadata (Cover Image, Author, Description), ensuring data consistency and reducing manual input effort.
+*   **Function:** When a user lists a book, the system queries Google's database using the title.
+*   **Benefit:** Automatically populates images, authors, and categories, ensuring data consistency and saving time.
 
-### Infrastructure as Code: Docker Containerization
-The entire application is containerized using **Docker** and orchestrated with **Docker Compose**.
-*   **Service Isolation:** The Frontend, Backend, and Database run in separate, isolated containers.
-*   **Environment Consistency:** Eliminates the "it works on my machine" problem by defining the exact OS, libraries, and dependencies required in `Dockerfile`s.
+### Infrastructure: Multi-Container Docker Setup
+The entire application is containerized for maximum reliability.
+*   **Service Isolation:** The Frontend (Nuxt), Backend (Django), and Database (Postgres) run in separate, isolated containers.
+*   **Network Orchestration:** Docker Compose manages the internal network, allowing the Nuxt server to talk to the Django API securely using internal container names.
 
 ---
 

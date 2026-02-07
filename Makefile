@@ -1,4 +1,4 @@
-.PHONY: help up down build logs restart migrate makemigrations shell django-shell superuser frontend-install frontend-dev frontend-build
+.PHONY: help dev up down build logs restart migrate makemigrations shell django-shell superuser frontend-install frontend-dev frontend-build
 
 # Docker Compose File
 COMPOSE_FILE = docker-compose.yml
@@ -17,7 +17,7 @@ help: ## Show this help message
 deploy: ## Deploy the project (build and start all services)
 	@./scripts/deploy.sh
 
-up: ## Start services in detached mode
+up: ## Start all services in Docker (backend & frontend)
 	docker-compose -f $(COMPOSE_FILE) up -d
 
 down: ## Stop and remove containers

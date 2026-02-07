@@ -3,7 +3,7 @@
 **Goal:** Show the project working perfectly in 5 minutes without crashing.
 
 **Pre-Requisites (Do this BEFORE the presentation starts):**
-1.  Run `make up` (or `docker-compose up`) to start the server.
+1.  Run `make dev` to start the server.
 2.  Open the browser to `localhost:3000`.
 3.  **Clear your browser cache** or open an **Incognito Window** (to avoid weird autofill issues).
 4.  Make sure you have a "Scripted User" ready (or rely on creating one live, as shown below).
@@ -48,7 +48,9 @@
 1.  **Search:** Type "Great Gatsby".
 2.  **Show:** "The search is instantaneous."
 3.  **Click:** A book card.
-4.  **Say:** "I can see details here. If I had credits/matches, I could request a swap immediately."
+4.  **Say:** "I can see details here. I can propose an exchange or, as the owner, I can manage the book."
+5.  **Action:** Navigate to the book *you just added*.
+6.  **Say:** "For books I own, I have **Edit** and **Remove** buttons directly on the page for easy management."
 
 ## Phase 5: Conclusion (4:30 - 5:00)
 **Action:** Minimize browser, show **Terminal** (logs running).

@@ -79,7 +79,7 @@
             <div class="w-8 h-8 rounded-xl bg-red-50 group-hover:bg-red-100/50 flex items-center justify-center transition-colors">
               <font-awesome-icon icon="fa-solid fa-right-from-bracket" />
             </div>
-            Log Out Gracefully
+            Log Out
           </button>
         </div>
       </div>

@@ -86,9 +86,9 @@ export default defineNuxtConfig({
 
   },
   runtimeConfig: {
-    apiBase: process.env.API_BASE_URL || 'http://web:8000/',
+    apiBase: process.env.API_BASE_URL || 'http://127.0.0.1:8000/',
     public: {
-      apiBase: process.env.API_BASE_URL_PUBLIC || 'http://localhost:8000/'
+      apiBase: process.env.API_BASE_URL_PUBLIC || 'http://127.0.0.1:8000/'
     }
   },
 

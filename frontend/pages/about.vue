@@ -2,9 +2,6 @@
   <div class="max-w-5xl mx-auto px-4 py-20">
     <!-- Hero Section -->
     <div class="text-center mb-20 space-y-6">
-      <div class="inline-block px-4 py-2 bg-indigo-50 rounded-2xl text-primary text-xs font-black uppercase tracking-[0.2em] mb-4">
-        Our Story
-      </div>
       <h1 class="text-5xl md:text-7xl font-black text-dark tracking-tight leading-tight">
         Connecting Readers, <br/> 
         <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">One Book at a Time.</span>
@@ -71,8 +68,10 @@
       <div class="relative z-10 space-y-6">
         <h2 class="text-3xl md:text-4xl font-black text-white px-4">Ready to start your next story?</h2>
         <div class="flex flex-wrap justify-center gap-4">
-          <NuxtLink to="/register" class="btn-primary !bg-white !text-dark !px-10 !py-4 !rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10 font-black">Join the Library</NuxtLink>
-          <NuxtLink to="/" class="btn-outline !border-white/20 !text-white !px-10 !py-4 !rounded-2xl hover:!bg-white/5 transition-all font-bold">Explore Books</NuxtLink>
+          <ClientOnly>
+            <NuxtLink v-if="!userStore.userIsLoggedIn" to="/register" class="btn-primary !bg-white !text-dark !px-10 !py-4 !rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/10 font-black">Join the Library</NuxtLink>
+          </ClientOnly>
+          <NuxtLink to="/library" class="btn-outline !border-white/20 !text-white !px-10 !py-4 !rounded-2xl hover:!bg-white/5 transition-all font-bold">Explore Library</NuxtLink>
         </div>
       </div>
     </div>
@@ -80,4 +79,6 @@
 </template>
 
 <script setup>
+import { useUserStore } from '~/stores/userStore';
+const userStore = useUserStore();
 </script>

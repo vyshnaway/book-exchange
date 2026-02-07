@@ -49,47 +49,48 @@ This separation allows the backend to potentially serve mobile apps or other cli
 ## Deployment & Infrastructure
 
 ### Q10: Why is Containerization (Docker) critical for this project?
-**Answer:** "Docker resolves environment dependency issues. It encapsulates the application logic, runtime (Python/Node), and system libraries into a single **Image**. This ensures the application behaves identically in development, testing, and production environments, regardless of the underlying host OS."
+**Answer:** "Docker resolves the 'it works on my machine' problem. It encapsulates the app logic, runtime (Python/Node), and OS libraries into container **Images**. We use a **Multi-Container Architecture** (Frontend, Backend, and Database) which ensures the entire system behaves identically in development and production, regardless of the host OS."
 
 ### Q11: Explain the Relationship in your Database Schema.
 **Answer:** "We utilize a Relational Schema:
-*   **Users to Books:** A **One-to-Many** relationship (One user can own multiple books).
-*   **Transactions:** A **Many-to-Many** logic enforced through a link table, connecting a Buyer ID and Seller ID to a specific Book ID, with a status field to track the exchange lifecycle."
+*   **Users to BookReader:** A **One-to-One** relationship (Every user has exactly one profile).
+*   **BookReader to Books:** A **One-to-Many** relationship (A user can list multiple books).
+*   **Transactions:** Connects a **Buyer**, **Seller**, and **specific Books**. It uses a status field (`Initiated`, `Accepted`, `Completed`) to track the exchange lifecycle."
 
 ---
 
 ## Advanced / "Distinction" Questions
 
 ### Q12: How does the Google Books API integration handle data inconsistency?
-**Answer:** "External APIs can be unpredictable. We implement defensive programming: we request data based on ISBN or Title, but we check for key fields (like thumbnail availability) before saving. If the API returns incomplete data, we fallback to default placeholders to ensure the UI doesn't break."
+**Answer:** "External APIs can be unpredictable. We implement defensive programming: we request data based on the title, but we check for key fields (like images or authors) before saving. If the API returns incomplete data, we fallback to default placeholders or allow manual input to ensure the UI doesn't break."
 
 ### Q13: If this app scales to 100,000 users, what would break first?
 **Answer:** "Likely the database read operations or the search functionality. To solve this, we would:
-1.  Implement **Caching** (e.g., Redis) for frequently accessed data like the 'Featured Books'.
-    2.  Offload search to a dedicated engine like **Elasticsearch** instead of relying on simple SQL database queries."
+1.  Implement **Caching** (e.g., Redis) for frequently accessed data.
+2.  Offload search to a dedicated engine like **Elasticsearch** instead of relying on simple SQL queries.
+3.  Use **Load Balancers** to distribute traffic across multiple container instances."
 
 ---
 
 ## Code-Specific / "Black Belt" Questions (The "Gotchas")
-*These are questions specific to YOUR code that an examiner might ask if they look at your screen.*
 
 ### Q14: Why do you use `Pipfile` instead of `requirements.txt`?
-**Answer:** "We use **Pipenv**. It manages dependencies more securely by creating a `Pipfile.lock`. This lock file ensures that every developer (and the production server) installs the EXACT same version of every library, preventing 'dependency hell'."
+**Answer:** "We use **Pipenv**. It manages dependencies more securely by creating a `Pipfile.lock`. This ensures every developer (and the Docker container) installs the EXACT same version of every library, preventing 'dependency hell'."
 
 ### Q15: In `authentication/models.py`, why use a Signal (`post_save`)?
-**Answer:** "We automatically want to create a `BookReader` profile whenever a new `User` registers. The `post_save` signal listens for the User creation event and triggers the profile creation immediately. This prevents us from having to manually call `create_profile` in every view where a user might be created."
+**Answer:** "We automatically want to create a `BookReader` profile whenever a new `User` registers. The `post_save` signal listens for the User creation event and triggers the profile creation immediately. It ensures every user always has a corresponding profile without manual intervention."
 
 ### Q16: What is `VersatileImageField` used for?
-**Answer:** "It's a Django library that helps us handle images. It allows us to resize and crop images on-the-fly (e.g., creating a small thumbnail for the list view and a large cover for the detail view) without storing multiple files manually."
+**Answer:** "It's a Django library that helps us handle images efficiently. It allows us to manage PPOI (Primary Point of Interest) and can be used to generate different sizes/crops of images on-the-fly if needed, ensuring the UI always looks clean regardless of the original image aspect ratio."
 
 ### Q17: In `nuxt.config.ts`, what is `runtimeConfig` doing?
-**Answer:** "It solves the Docker networking issue. It allows us to define API URLs that change depending on where the code is running (e.g., `http://web:8000` inside the container vs `http://localhost:8000` in the browser). It hydrates these values at runtime so we don't need to rebuild the app just to change a URL."
+**Answer:** "It handles environment-specific variables. It allows us to define API URLs that change depending on the context (e.g., internal Docker networking vs. external browser access). Crucially, `public.apiBase` is used by the browser to talk to the Backend at `localhost:8000`."
 
 ### Q18: Your `Transaction` model has a `token` field. What is it?
-**Answer:** "That is a unique identifier (UUID) for the transaction. We use it in URLs (e.g., `/transaction/<token>`) instead of the sequential ID (like `/transaction/1`). This prevents potential attackers from guessing other transaction IDs by simply incrementing the number (Enumeration Attack)."
+**Answer:** "That is a **UUID** (Universally Unique Identifier). We use it as the primary key for transactions in the frontend. It's much more secure than a sequential ID (like `1`, `2`, `3`) because it's virtually impossible to guess, protecting user transaction data from enumeration attacks."
 
 ### Q19: What is CORS and why did you configure it?
-**Answer:** "CORS (Cross-Origin Resource Sharing) is a browser security feature. Since our Frontend runs on port `3000` and Backend on `8000`, browsers block requests by default. We installed `django-cors-headers` to explicitly allow our frontend domain to fetch data from our backend API."
+**Answer:** "CORS (Cross-Origin Resource Sharing) is a browser security feature. Since our Frontend (`3000`) and Backend (`8000`) run on different ports, the browser blocks requests by default. We configured `django-cors-headers` to explicitly allow our frontend to communicate with our API."
 
-### Q20: How would you automate testing for this project?
-**Answer:** "We would verify the backend logic using **Django's TestCase** (Unit Tests) to check models and views. For the frontend, we could use **Cypress** or **Selenium** for End-to-End (E2E) testing, which simulates a real user clicking buttons and filling forms to ensure the full flow works."
+### Q20: How did you implement "Edit" and "Remove" for books?
+**Answer:** "We added action buttons to the **Book Details** page that only appear for the book's owner. 'Edit' redirects to a pre-filled form in the AddBook view using a query parameter, while 'Remove' triggers a DELETE request to our API after a user confirmation, ensuring users can manage their inventory seamlessly."

@@ -65,16 +65,20 @@
 
           <!-- Country Selection -->
           <div class="flex flex-col gap-2">
-            <label for="country" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Country Code</label>
-            <input
-              id="country"
-              v-model="form.country"
-              required
-              type="text"
-              placeholder="Ex: US, PL, GB"
-              maxlength="2"
-              class="input-field uppercase"
-            />
+            <label for="country" class="text-xs font-bold uppercase tracking-widest text-slate-400 ml-1">Country ({{ countries.length }})</label>
+            <ClientOnly>
+              <select
+                id="country"
+                v-model="selectedCountryName"
+                required
+                class="input-field"
+              >
+                <option value="">Select your country</option>
+                <option v-for="country in countries" :key="country" :value="country">
+                  {{ country }}
+                </option>
+              </select>
+            </ClientOnly>
           </div>
 
           <!-- Username & Email -->
@@ -167,10 +171,22 @@
 
 <script setup>
   import { useUserStore } from '~/stores/userStore';
-  import { reactive, ref } from 'vue';
+  import { useCountryStore } from '~/stores/countryStore';
+  import { storeToRefs } from 'pinia';
+  import { reactive, ref, onMounted } from 'vue';
 
   const store = useUserStore();
+  const countryStore = useCountryStore();
+  
+  // Use storeToRefs to maintain reactivity
+  const { countries } = storeToRefs(countryStore);
+  
+  // Populate countries immediately (runs on Server & Client) to minimize hydration mismatch
+  countryStore.getAllCountries();
+  
   const remember = ref(false);
+  const selectedCountryName = ref('');
+  
   const form = reactive({
     username: '',
     first_name: '',
@@ -186,6 +202,20 @@
 
   async function register() {
     store.resetErrors();
+    
+    console.log("Register clicked. Selected Country Name:", selectedCountryName.value);
+    
+    // Convert country name to code before submitting
+    if (selectedCountryName.value) {
+      countryStore.chooseCountry(selectedCountryName.value);
+      console.log("Code from store:", countryStore.chosenCountryCode);
+      form.country = countryStore.chosenCountryCode;
+    } else {
+      console.warn("No country selected!");
+    }
+    
+    console.log("Submitting form:", form);
+    
     await store.register(form);
     if (store.registerSuccess) {
       $toast.success("Welcome to Boookz! Your account is ready.");

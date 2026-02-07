@@ -2,8 +2,8 @@
   <div class="max-w-4xl mx-auto px-4 py-8">
     <div class="glass p-8 rounded-3xl shadow-premium">
       <div class="mb-10 text-center">
-        <h1 class="text-4xl font-extrabold text-dark tracking-tight">Add a New Book</h1>
-        <p class="text-slate-500 mt-2 font-medium italic">Share your treasures with the community</p>
+        <h1 class="text-4xl font-extrabold text-dark tracking-tight">{{ isEditMode ? 'Edit Book' : 'Add a New Book' }}</h1>
+        <p class="text-slate-500 mt-2 font-medium italic">{{ isEditMode ? 'Update your book details' : 'Share your treasures with the community' }}</p>
       </div>
 
       <form @submit.prevent="addBook" enctype="multipart/form-data" class="flex flex-col gap-10">
@@ -159,7 +159,7 @@
         <!-- Submit Button -->
         <div class="pt-6">
           <button type="submit" class="btn-primary w-full !rounded-2xl !py-4 shadow-xl">
-            Publish to Community
+            {{ isEditMode ? 'Update Book' : 'Publish to Community' }}
           </button>
         </div>
       </form>
@@ -171,7 +171,7 @@
   import { useUserStore } from '~/stores/userStore';
   import { useLangAPIStore } from '~/stores/languagesStore';
   import { useGoogleAPIStore } from '~/stores/googleAPIStore';
-  import { ref, reactive } from 'vue';
+  import { ref, reactive, onMounted } from 'vue';
 
   const userStore = useUserStore();
   const langStore = useLangAPIStore();
@@ -189,9 +189,11 @@
     'Play', 'Scripts', 'Screenplays', 'Manga', 'Manhua', 'Manhwa', 'Self-Publishing', 'Indie',
   ];
 
+  const route = useRoute();
+  const isEditMode = ref(false);
+  const editBookId = ref(null);
   const chosenLanguage = ref('');
   const suggestedTitles = ref([]);
-  // const fd = new FormData(); // Removed global fd
 
   const bookForm = reactive({
     title: '',
@@ -203,6 +205,77 @@
     description: 'some description',
     shelf: '',
   });
+
+  // Check if we're in edit mode and load book data
+  onMounted(async () => {
+    // Ensure user data is loaded first
+    if (!userStore.userIsLoggedIn || userStore.userGiveAwayBooks.length === 0 && userStore.userWantedBooks.length === 0) {
+      await userStore.getUserInfo();
+    }
+    
+    if (route.query.edit) {
+      isEditMode.value = true;
+      editBookId.value = route.query.edit;
+      await loadBookData(editBookId.value);
+    }
+  });
+
+  async function loadBookData(bookId) {
+    console.log('Loading book data for ID:', bookId);
+    console.log('Available books:', {
+      giveaway: userStore.userGiveAwayBooks.length,
+      wanted: userStore.userWantedBooks.length
+    });
+    
+    // Find the book in the user's books
+    const allBooks = [...userStore.userGiveAwayBooks, ...userStore.userWantedBooks];
+    const book = allBooks.find(b => b.pk == bookId);
+    
+    console.log('Found book:', book);
+    
+    if (book) {
+      bookForm.title = book.title || '';
+      
+      // Handle author - could be array or comma-separated string
+      if (Array.isArray(book.author)) {
+        bookForm.author = book.author;
+      } else if (typeof book.author === 'string') {
+        bookForm.author = book.author.split(',').map(a => a.trim());
+      } else {
+        bookForm.author = [];
+      }
+      
+      // Handle category - could be array or comma-separated string
+      if (Array.isArray(book.category)) {
+        bookForm.category = book.category;
+      } else if (typeof book.category === 'string') {
+        bookForm.category = book.category.split(',').map(c => c.trim());
+      } else {
+        bookForm.category = [];
+      }
+      
+      bookForm.condition = book.condition || '';
+      bookForm.language = book.language || '';
+      bookForm.description = book.description || 'some description';
+      
+      // Determine shelf based on which array the book is in
+      if (userStore.userGiveAwayBooks.find(b => b.pk == bookId)) {
+        bookForm.shelf = 'giveaway';
+      } else if (userStore.userWantedBooks.find(b => b.pk == bookId)) {
+        bookForm.shelf = 'wanted';
+      }
+      
+      // Set language dropdown
+      if (book.language) {
+        chosenLanguage.value = book.language;
+        langStore.chooseLanguage(book.language);
+      }
+      
+      console.log('Book form populated:', bookForm);
+    } else {
+      console.error('Book not found with ID:', bookId);
+    }
+  }
 
   const { $toast } = useNuxtApp();
 
@@ -256,34 +329,40 @@
       $toast.error('Please select a shelf location');
       return;
     }
-    if (bookForm.image.length === 0) {
+    
+    // Only require images for new books, not edits
+    if (!isEditMode.value && bookForm.image.length === 0) {
       $toast.error('Please upload at least one image');
       return;
     }
 
     const fd = new FormData();
     fd.append('title', bookForm.title);
-    // Join arrays to ensure backend receives comma-separated strings
     fd.append('author', bookForm.author.join(','));
     fd.append('category', bookForm.category.join(','));
     fd.append('condition', bookForm.condition);
     fd.append('language', bookForm.language);
     fd.append('description', bookForm.description);
     
-    // Append images
+    // Append images only if new ones were selected
     for (const file of bookForm.image) {
         fd.append('image', file);
     }
 
-    // Debug: Log what we are sending
-    for (var pair of fd.entries()) {
-        console.log(pair[0]+ ', ' + pair[1]); 
-    }
-
-    await userStore.addBook(fd, bookForm.shelf);
-    if (userStore.addBookSuccessfull) {
-      $toast.success('Book successfully published!');
-      await navigateTo('/profile');
+    if (isEditMode.value) {
+      // Update existing book
+      await userStore.updateBook(editBookId.value, fd, bookForm.shelf);
+      if (userStore.updateBookSuccessful) {
+        $toast.success('Book successfully updated!');
+        await navigateTo('/profile');
+      }
+    } else {
+      // Add new book
+      await userStore.addBook(fd, bookForm.shelf);
+      if (userStore.addBookSuccessfull) {
+        $toast.success('Book successfully published!');
+        await navigateTo('/profile');
+      }
     }
   }
 

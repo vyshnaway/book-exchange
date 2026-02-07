@@ -20,36 +20,6 @@
 
       <!-- Main Content -->
       <div class="lg:col-span-2 flex flex-col gap-12">
-        <!-- Profile Picture Section -->
-        <section class="glass p-8 rounded-3xl shadow-premium">
-          <h2 class="text-xl font-bold text-dark mb-8">Public Profile</h2>
-          <div class="flex flex-col sm:flex-row items-center gap-8">
-            <div class="relative group">
-              <img
-                :src="userStore.user?.profile_image || avatarPlaceholder"
-                alt="Profile Avatar"
-                class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg ring-1 ring-slate-100"
-              />
-              <div class="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
-                <font-awesome-icon icon="fa-solid fa-camera" class="text-white text-xl" />
-              </div>
-            </div>
-            
-            <div class="flex flex-col gap-3 flex-grow">
-              <div class="flex flex-wrap gap-2">
-                <button type="button" class="btn-primary !text-xs !py-2 !px-4" @click="changePicture">
-                  Upload New Picture
-                </button>
-                <button type="button" class="btn-outline !text-xs !py-2 !px-4 !border-slate-200 !text-slate-500" @click="removePicture">
-                  Remove
-                </button>
-              </div>
-              <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest leading-relaxed">
-                Allowed formats: JPG, PNG. Max size: 2MB.
-              </p>
-            </div>
-          </div>
-        </section>
 
         <!-- Personal Data Section -->
         <section class="glass p-8 rounded-3xl shadow-premium">
