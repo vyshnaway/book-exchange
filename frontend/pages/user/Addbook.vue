@@ -309,6 +309,10 @@
 
   let debounceTimeout = null;
   function onSearchUpdate(search) {
+    // If the search string is exactly the same as the selected book title, 
+    // it likely means the user just selected an item. Don't trigger a new search.
+    if (search === bookForm.title) return;
+
     if (debounceTimeout) clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
       getTitleUsingGoogleAPI(search);
@@ -319,7 +323,7 @@
     if (!title) return;
     const languageCode = langStore.chosenLangCode;
     
-    $toast.info('Fetching details from Google Books...');
+    // $toast.info('Fetching details from Google Books...');
     await googleStore.getBookDetailsFromTitle(title, languageCode);
     
     // Populate authors and description
@@ -359,7 +363,7 @@
       $toast.success('Cover image auto-fetched!');
     } catch (error) {
       console.error('Failed to fetch cover image:', error);
-      $toast.error('Could not fetch book cover automatically.');
+      // $toast.error('Could not fetch book cover automatically.');
     }
   }
 

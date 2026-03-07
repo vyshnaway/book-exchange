@@ -8,6 +8,7 @@ export const useGoogleAPIStore = defineStore({
         book_description: '',
         book_cover_url: '',
         book_limit: 10,
+        searchController: null,
     }),
     actions: {
         async searchForBookTitles(bookTitle, languageCode) {
@@ -15,13 +16,20 @@ export const useGoogleAPIStore = defineStore({
                 this.book_titles = [];
                 return;
             }
+
+            // Cancel previous request if it exists
+            if (this.searchController) {
+                this.searchController.abort();
+            }
+            this.searchController = new AbortController();
+
             try {
                 let url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(bookTitle) + '&maxResults=' + this.book_limit;
                 if (languageCode) {
                     url += "&langRestrict=" + languageCode;
                 }
 
-                const data = await $fetch(url);
+                const data = await $fetch(url, { signal: this.searchController.signal });
                 this.book_titles = [];
                 if (data && data["items"]) {
                     const uniqueTitles = new Set();
@@ -35,8 +43,14 @@ export const useGoogleAPIStore = defineStore({
                     }
                 }
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    // Ignore abort errors
+                    return;
+                }
                 console.error("Search for book titles failed:", error);
                 this.book_titles = [];
+            } finally {
+                this.searchController = null;
             }
         },
         async getBookDetailsFromTitle(bookTitle, languageCode) {

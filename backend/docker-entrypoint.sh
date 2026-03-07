@@ -55,5 +55,8 @@ if not User.objects.filter(username=username).exists():
     print(f"Superuser {username} created")
 END
 
+echo "Seeding initial data..."
+python seed_data.py
+
 # Execute the command passed to docker run
 exec "$@"

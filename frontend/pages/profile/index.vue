@@ -1,28 +1,29 @@
 <template>
   <div class="flex flex-col gap-8">
     <!-- Profile Hero Header -->
-    <header class="relative overflow-hidden rounded-3xl bg-indigo-600 px-6 py-12 md:py-20 shadow-premium">
+    <!-- Profile Hero Header (Compact Redesign) -->
+    <header class="relative overflow-hidden rounded-3xl bg-indigo-600 px-6 py-8 shadow-premium">
       <!-- Decorative Elements -->
       <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
       <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
 
-      <div class="relative flex flex-col items-center text-center gap-6">
-        <div class="relative group">
+      <div class="relative flex flex-row items-center gap-6">
+        <div class="relative group flex-shrink-0">
           <img
             :src="userStore.userProfileImage || avatarPlaceholder"
             alt="Profile Avatar"
-            class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-white/20 shadow-2xl transition-transform duration-500 group-hover:scale-105"
+            class="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-white/20 shadow-2xl transition-transform duration-500 group-hover:scale-105"
           />
-          <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-indigo-600">
-            <font-awesome-icon icon="fa-solid fa-check" class="text-indigo-600 text-sm" />
+          <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg border-2 border-indigo-600">
+            <font-awesome-icon icon="fa-solid fa-check" class="text-indigo-600 text-xs" />
           </div>
         </div>
 
-        <div class="flex flex-col gap-2">
-          <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
             {{ userStore.userName || 'Book Enthusiast' }}
           </h2>
-          <div class="flex items-center justify-center gap-2 text-indigo-100/80 font-medium">
+          <div class="flex items-center gap-2 text-indigo-100/80 font-medium text-sm">
             <font-awesome-icon icon="fa-solid fa-location-dot" class="text-xs" />
             <span>{{ userStore.region || 'World Citizen' }}</span>
           </div>
