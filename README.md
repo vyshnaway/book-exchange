@@ -1,11 +1,11 @@
-# 📚 Boookz Exchange
+# Boookz Exchange
 **Sustainable Reading through Peer-to-Peer Exchange**
 
 Boookz Exchange is a full-stack web application designed for students and book lovers to catalogue, search, and swap physical books within a localized network.
 
 ---
 
-## ⚡ Quick Start (Docker)
+## Quick Start (Docker)
 The entire application is containerized for a "Zero-Setup" experience.
 
 1.  **Clone & Enter:**
@@ -29,7 +29,7 @@ The entire application is containerized for a "Zero-Setup" experience.
 
 ---
 
-## 🔐 Demo Credentials
+## Demo Credentials
 The following users are **automatically created** when you run `make deploy`. You can use them to log in immediately.
 
 | Username | Password |
@@ -43,7 +43,7 @@ The following users are **automatically created** when you run `make deploy`. Yo
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Core Architecture
 - **Frontend:** [Nuxt.js 3](https://nuxt.com/) (Vue.js Framework) - Server-Side Rendered (SSR) for SEO and performance.
@@ -56,7 +56,7 @@ The following users are **automatically created** when you run `make deploy`. Yo
 - **Tailwind CSS:** Premium, responsive UI design system with custom glassmorphism.
 - **Pinia:** Centralized state management for seamless user transitions.
 
-## 🆘 Troubleshooting
+## Troubleshooting
 If you encounter any issues, refer to the [Troubleshooting section in the Guidelines](./.docs/guidelines.md#troubleshooting) or run `make logs` to see real-time server errors.
 
 
